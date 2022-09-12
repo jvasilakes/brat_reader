@@ -37,6 +37,21 @@ You can iterate through specific types of annotations with the `.spans`, `.attri
 ... "T8	PROCESS_OF 86 88	in"
 ```
 
+You can output brat formatted annotations simply by calling `str(ann)` or `print(ann)`. This works for individual annotations,
+as shown above, or for a `BratAnnotations` instance.
+
+```python
+>>> anns = BratAnnotations.from_file("/path/to/file.ann")
+>>> print(anns)
+... """
+T6	AgeGroup 89 97	children
+T5	PathologicFunction 73 79	reflux
+T8	PROCESS_OF 86 88	in
+E1	PROCESS_OF:T8 PathologicFunction:T5 AgeGroup:T6
+...
+"""
+```
+
 
 `Span`, `Attribute`, and `Event` instances have the following properties.
 
