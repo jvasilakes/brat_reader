@@ -27,6 +27,9 @@ class Annotation(object):
     def __hash__(self):
         raise NotImplementedError()
 
+    def __str__(self):
+        return self.to_brat_str()
+
     def __repr__(self):
         field_strings = []
         for (k, v) in self.__dict__.items():
@@ -336,6 +339,10 @@ class BratAnnotations(object):
             self._sorted_events = self._sort_events_by_span_index()
         return self._sorted_events
 
+    def __iter__(self):
+        for ann in self.get_highest_level_annotations():
+            yield ann
+
     def _sort_spans_by_index(self):
         return sorted(self._spans, key=lambda s: s.start_index)
 
@@ -355,7 +362,6 @@ class BratAnnotations(object):
         return [self._attributes[i] for i in sorted_indices]
 
     def _sort_events_by_span_index(self):
-        #return sorted(self._events, key=lambda e: e.span.start_index)
         return sorted(self._events, key=lambda e: e.start_index)
 
     def _resolve(self):

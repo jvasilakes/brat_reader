@@ -16,16 +16,29 @@ python setup.py develop --uninstall
 ```
 
 # Usage
-Given an .ann file, parse the annotations with 
+
+The `brat_reader.BratAnnotations` class automatically links events to their associated text spans and attributes.
+Parse a `.ann` file and iterate through the contents with
 
 ```python
-from brat_reader import BratAnnotations
-anns = BratAnnotations.from_file("/path/to/file.ann")
+>>> from brat_reader import BratAnnotations
+>>> anns = BratAnnotations.from_file("/path/to/file.ann")
+>>> for ann in anns:
+>>> 	  print(ann)
+... "E1	PROCESS_OF:T8 PathologicFunction:T5 AgeGroup:T6
 ```
 
-`BratAnnotations` automatically links events to their associated text spans and attributes. `Event` instances, sorted by trigger span indices, can be accessed with `BratAnnotations.events`.
+By default the `__iter__` method will iterate through the highest level annotations.
+You can iterate through specific types of annotations with the `.spans`, `.attributes`, and `.events` properties. E.g.
 
-`Span`s, `Attribute`s, and `Event`s are `collections.namedtuple` instances with the following structures:
+```python
+>>> for span in anns.spans:
+>>>     print(span)
+... "T8	PROCESS_OF 86 88	in"
+```
+
+
+`Span`, `Attribute`, and `Event` instances have the following properties.
 
 ## `Span`
 * `id : str`
@@ -40,6 +53,5 @@ anns = BratAnnotations.from_file("/path/to/file.ann")
 
 ## `Event`
 * `id : str`
-* `type : str`
-* `span : Span`
+* `spans : list(Span)`
 * `attributes : dict({str: Attribute})`
