@@ -43,6 +43,15 @@ class Annotation(object):
                         sub_v_rep = repr(sub_v)
                     repr_dict[sub_k] = sub_v_rep
                 v_rep = repr(repr_dict)
+            elif isinstance(v, (list, tuple)):
+                repr_list = []
+                for sub_v in v:
+                    if isinstance(sub_v, Annotation):
+                        sub_v_rep = sub_v.short_repr()
+                    else:
+                        sub_v_rep = repr(sub_v)
+                    repr_list.append(sub_v_rep)
+                v_rep = repr(repr_list)
             else:
                 v_rep = repr(v)
             field_strings.append(f"{k}: {v_rep}")
@@ -53,7 +62,11 @@ class Annotation(object):
 
     def short_repr(self):
         class_name = str(self.__class__).split('.')[-1][:-2]
-        return f"{class_name}(id: {self.id})"
+        contents = [f"id: {self.id})"]
+        if "_type" in self.__dict__:
+            contents.insert(0, f"type: {self.type}")
+        contents_str = ', '.join(contents)
+        return f"{class_name}({contents_str})"
 
     def copy(self):
         return self.__class__(**self.__dict__)
@@ -101,7 +114,6 @@ class Span(Annotation):
             self.end_index,
             self.text,
         ))
-
 
     def to_brat_str(self, output_references=False):
         # output_references is unused but simplifies to_brat_str for Attribute
@@ -187,43 +199,46 @@ class Attribute(Annotation):
 
 
 class Event(Annotation):
-    def __init__(self, _id, _type, span, attributes=None, _source_file=None):
+    """
+    brat_reader does not enforce any specific Event structure.
+    All that is required is a single reference span.
+    """
+    def __init__(self, _id, *spans, attributes=None, _source_file=None):
         super().__init__(_id=_id, _source_file=_source_file)
-        self._type = _type
-        self.span = span
+        for span in spans:
+            assert isinstance(span, Span), f"Not a Span instance: {span}"
+        self.spans = spans
         self.attributes = attributes or {}
         for attr in self.attributes.values():
             attr.reference = self
-
-    @property
-    def type(self):
-        return self._type
 
     def __eq__(self, other):
         if not isinstance(other, Event):
             return False
         return all([
-            self.type == other.type,
-            self.span == other.span,
+            self.spans == other.spans,
             self.attributes == other.attributes,
         ])
 
     @property
     def start_index(self):
-        return self.span.start_index
+        return min([span.start_index for span in self.spans])
 
     @property
     def end_index(self):
-        return self.span.end_index
+        return max([span.end_index for span in self.spans])
 
     def to_brat_str(self, output_references=False):
-        event_str = f"{self.id}\t{self.type}:{self.span.id}"
-        outlines = [event_str]
+        event_str = f"{self.id}\t"
+        for span in self.spans:
+            event_str += f"{span.type}:{span.id} "
+        outlines = [event_str.strip()]
         if output_references is True:
-            outlines.insert(0, self.span.to_brat_str())
             attr_strs = [a.to_brat_str(output_references=False)
                          for a in self.attributes.values()]
             outlines.extend(attr_strs)
+            for span in self.spans:
+                outlines.insert(0, span.to_brat_str())
         brat_str = '\n'.join(outlines)
         return brat_str
 
@@ -335,13 +350,13 @@ class BratAnnotations(object):
             if isinstance(attr.reference, Span):
                 span_indices.append(attr.reference.start_index)
             elif isinstance(attr.reference, Event):
-                span = attr.reference.span
-                span_indices.append(span.start_index)
+                span_indices.append(attr.reference.start_index)
         sorted_indices = np.argsort(span_indices)
         return [self._attributes[i] for i in sorted_indices]
 
     def _sort_events_by_span_index(self):
-        return sorted(self._events, key=lambda e: e.span.start_index)
+        #return sorted(self._events, key=lambda e: e.span.start_index)
+        return sorted(self._events, key=lambda e: e.start_index)
 
     def _resolve(self):
         span_lookup = {}
@@ -360,9 +375,12 @@ class BratAnnotations(object):
             self._attributes.append(attribute)
 
         for raw_event in self._raw_events:
-            ref_id = raw_event.pop("ref_span_id")
-            span = span_lookup[ref_id]
-            event = Event(**raw_event, span=span, attributes=None)
+            event_spans = []
+            for (span_type, span_id) in raw_event["ref_spans"]:
+                span = span_lookup[span_id]
+                event_spans.append(span)
+            event = Event(raw_event["_id"], *event_spans, attributes=None,
+                          _source_file=raw_event["_source_file"])
             attrs = attribute_lookup[raw_event["_id"]]
             for attr in attrs:
                 attr.reference = event
@@ -437,12 +455,16 @@ def parse_brat_span(line):
 
 def parse_brat_event(line):
     fields = line.split()
-    assert len(fields) == 2
-    uid, label_and_ref = fields
-    label, ref = label_and_ref.split(':')
+    assert len(fields) >= 2
+    uid = fields[0]
+    spans = fields[1:]
+    ref_spans = []
+    for span in spans:
+        label, ref = span.split(':')
+        ref_spans.append((label, ref))
     return {"_id": uid,
             "_type": label,
-            "ref_span_id": ref}
+            "ref_spans": ref_spans}
 
 
 def parse_brat_attribute(line):
