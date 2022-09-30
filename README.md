@@ -9,6 +9,7 @@ python setup.py develop
 
 Using `develop` should update your installed version when you pull changes from the github.
 
+
 ## Uninstallation
 
 ```
@@ -52,21 +53,28 @@ E1	PROCESS_OF:T8 PathologicFunction:T5 AgeGroup:T6
 """
 ```
 
+New! You can specify either raw text or sentence-segmented JSONL format text.
+This allows you to easily cross-reference annotations with their associated text spans.
 
-`Span`, `Attribute`, and `Event` instances have the following properties.
+JSONL formatted sentences
+```
+$> cat sentences.jsonl
 
-## `Span`
-* `id : str`
-* `start_index : int`
-* `end_index : int`
-* `text : str`
+{"sent_index": 1,
+ "start_char": 0,
+ "end_char: 23,
+ "_text": "The cat sat on the mat."}
+```
 
-## `Attribute`
-* `id : str`
-* `type : str`
-* `value : {str,int}`
-
-## `Event`
-* `id : str`
-* `spans : list(Span)`
-* `attributes : dict({str: Attribute})`
+```python
+>>> anns = BratAnnotations.from_file("path/to/file.ann", text="path/to/sentences.jsonl")
+>>> some_event = anns.events[0]
+>>> print(some_event)
+... "E1	SIT:T2 Animal:T1 Location:T3
+>>> event_sentences = anns.text.sentences(some_event.start_index, some_event.end_index, window=0)
+>>> print(event_sentences)
+... [{"sent_index": 1,
+...  "start_index": 0,
+...  "end_index": 23,
+...  "_text": "The cat sat on the mat."}]
+```
