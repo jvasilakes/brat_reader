@@ -1,5 +1,7 @@
 `brat_reader` is a simple package for reading brat-formatted text annotations (https://brat.nlplab.org/).
 
+<https://brat-reader.readthedocs.io/>
+
 # Installation
 `brat_reader` has no external dependencies. Install it with
 
