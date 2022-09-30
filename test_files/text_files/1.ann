@@ -1,0 +1,8 @@
+T1	mamm 93 104	brown hares
+T2	virs 69 80	arboviruses
+T3	PROCESS_OF 81 83	in
+E1	PROCESS_OF:T3 virs:T2 mamm:T1
+T4	humn 396 401	human
+T5	dsyn 402 409	disease
+T6	PROCESS_OF 396 409	human disease
+E2	PROCESS_OF:T6 dsyn:T5 humn:T4
