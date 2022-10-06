@@ -10,7 +10,10 @@ class Annotation(object):
     The base class for brat annotations.
     Use Span, Event, or Attribute instead of this class.
     """
-    def __init__(self, _id, _type, _source_file):
+    def __init__(self, _id: str, _type: str, _source_file: str = None):
+        assert isinstance(_id, str)
+        assert isinstance(_type, str)
+        assert isinstance(_source_file, (type(None), str))
         self._id = _id
         self._type = _type
         self._source_file = _source_file
@@ -110,9 +113,12 @@ class Span(Annotation):
     :param str _source_file: (Optional), the name of the .ann file which
                              contains this span.
     """
-    def __init__(self, _id, start_index, end_index,
-                 text, _type="Span", _source_file=None):
+    def __init__(self, _id: str, start_index: int, end_index: int,
+                 text: str, _type: str = "Span", _source_file: str = None):
         super().__init__(_id=_id, _type=_type, _source_file=_source_file)
+        assert isinstance(start_index, int)
+        assert isinstance(end_index, int)
+        assert isinstance(text, str)
         self.start_index = start_index
         self.end_index = end_index
         self.text = text
@@ -161,6 +167,7 @@ class Attribute(Annotation):
     def __init__(self, _id, value, reference,
                  _type="Attribute", _source_file=None):
         super().__init__(_id=_id, _type=_type, _source_file=_source_file)
+        assert isinstance(reference, Annotation)
         self.value = value
         self.reference = reference
         if not isinstance(self.reference, (Span, Event, type(None))):
