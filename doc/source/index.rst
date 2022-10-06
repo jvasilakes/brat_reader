@@ -80,6 +80,7 @@ JSONL formatted sentences
 
 .. code-block:: python
 
+   >>> from brat_reader import BratAnnotations, BratText
    >>> anns = BratAnnotations.from_file("path/to/file.ann")
    >>> anntxt = BratText.from_files(text="path/to/file.txt", sentences="path/to/file.jsonl")
    >>> print(anns.events[0])

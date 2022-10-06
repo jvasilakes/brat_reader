@@ -69,14 +69,15 @@ $> cat sentences.jsonl
 ```
 
 ```python
->>> anns = BratAnnotations.from_file("path/to/file.ann", text="path/to/sentences.jsonl")
->>> some_event = anns.events[0]
->>> print(some_event)
+>>> from brat_reader import BratAnnotations, BratText
+>>> anns = BratAnnotations.from_file("path/to/file.ann")
+>>> anntxt = BratText.from_files(text="path/to/file.txt", sentences="path/to/file.jsonl")
+>>> print(anns.events[0])
 ... "E1	SIT:T2 Animal:T1 Location:T3
->>> event_sentences = anns.text.sentences(some_event.start_index, some_event.end_index, window=0)
+>>> event_sentences = annstxt.sentences(anns.events[0])
 >>> print(event_sentences)
 ... [{"sent_index": 1,
-...  "start_index": 0,
-...  "end_index": 23,
-...  "_text": "The cat sat on the mat."}]
+...   "start_char": 0,
+...   "end_char": 23,
+...   "_text": "The cat sat on the mat."}]
 ```
