@@ -80,8 +80,33 @@ def test_events():
     assert gold_str == ann_str
 
 
+def test_brat_text():
+    anns = brat_reader.BratAnnotations.from_file(
+        "test_files/text_files/1.ann")
+    anntxt = brat_reader.BratText.from_files(
+        text="test_files/text_files/1.txt",
+        sentences="test_files/text_files/1.jsonl")
+
+    for span in anns.spans:
+        text_span_idx = anntxt.text(span.start_index, span.end_index)
+        assert text_span_idx == span.text
+        text_span = anntxt.text(annotations=[span])
+        assert text_span == span.text
+
+        tok_span_idx = anntxt.tokens(span.start_index, span.end_index)
+        assert span.text in ' '.join(tok_span_idx)
+        tok_span = anntxt.tokens(annotations=[span])
+        assert span.text in ' '.join(tok_span)
+
+        sent_span_idx = anntxt.sentences(span.start_index, span.end_index)
+        assert span.text in ' '.join([s["_text"] for s in sent_span_idx])
+        sent_span = anntxt.sentences(annotations=[span])
+        assert span.text in ' '.join([s["_text"] for s in sent_span])
+
+
 if __name__ == "__main__":
     test_spans()
     test_attributes()
     test_events()
+    test_brat_text()
     print("PASSED!")

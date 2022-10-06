@@ -10,7 +10,7 @@ Brat Reader
 
 Installation
 ============
-`brat_reader` has no external dependencies. Install it with
+`brat_reader` is written for Python 3 and has no external dependencies. Install it with
 
 .. code-block:: bash
 
@@ -64,8 +64,8 @@ as shown above, or for a `BratAnnotations` instance.
    ...
    """
 
-New! You can specify either raw text or sentence-segmented JSONL format text.
-This allows you to easily cross-reference annotations with their associated text spans.
+New! You can specify raw text and/or sentence-segmented text,
+which allows you to easily cross-reference annotations with their associated text spans.
 
 JSONL formatted sentences
 
@@ -80,16 +80,16 @@ JSONL formatted sentences
 
 .. code-block:: python
 
-   >>> anns = BratAnnotations.from_file("path/to/file.ann", text="path/to/sentences.jsonl")
-   >>> some_event = anns.events[0]
-   >>> print(some_event)
+   >>> anns = BratAnnotations.from_file("path/to/file.ann")
+   >>> anntxt = BratText.from_files(text="path/to/file.txt", sentences="path/to/file.jsonl")
+   >>> print(anns.events[0])
    ... "E1	SIT:T2 Animal:T1 Location:T3
-   >>> event_sentences = anns.text.sentences(some_event.start_index, some_event.end_index, window=0)
+   >>> event_sentences = annstxt.sentences(anns.events[0])
    >>> print(event_sentences)
    ... [{"sent_index": 1,
-   ...  "start_index": 0,
-   ...  "end_index": 23,
-   ...  "_text": "The cat sat on the mat."}]
+   ...   "start_char": 0,
+   ...   "end_char": 23,
+   ...   "_text": "The cat sat on the mat."}]
 
 
 API
@@ -102,3 +102,4 @@ API
 .. automodule:: brat_reader
    :members:
    :undoc-members:
+   :show-inheritance:

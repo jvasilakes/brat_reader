@@ -33,8 +33,11 @@
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">html</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
 
 <div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../index.html#brat_reader.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -42,7 +45,10 @@
 <span class="sd">    The base class for brat annotations.</span>
 <span class="sd">    Use Span, Event, or Attribute instead of this class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">_source_file</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_source_file</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">str</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_source_file</span> <span class="o">=</span> <span class="n">_source_file</span>
@@ -142,9 +148,12 @@
 <span class="sd">    :param str _source_file: (Optional), the name of the .ann file which</span>
 <span class="sd">                             contains this span.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">start_index</span><span class="p">,</span> <span class="n">end_index</span><span class="p">,</span>
-                 <span class="n">text</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="s2">&quot;Span&quot;</span><span class="p">,</span> <span class="n">_source_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Span&quot;</span><span class="p">,</span> <span class="n">_source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="n">_type</span><span class="p">,</span> <span class="n">_source_file</span><span class="o">=</span><span class="n">_source_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_index</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_index</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_index</span> <span class="o">=</span> <span class="n">start_index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_index</span> <span class="o">=</span> <span class="n">end_index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
@@ -190,9 +199,10 @@
 <span class="sd">    :param str _source_file: (Optional), the name of the .ann file which</span>
 <span class="sd">                             contains this span.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">reference</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">_type</span><span class="o">=</span><span class="s2">&quot;Attribute&quot;</span><span class="p">,</span> <span class="n">_source_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="n">_id</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="n">_type</span><span class="p">,</span> <span class="n">_source_file</span><span class="o">=</span><span class="n">_source_file</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">Annotation</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="n">reference</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span> <span class="p">(</span><span class="n">Span</span><span class="p">,</span> <span class="n">Event</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
@@ -344,19 +354,19 @@
 
 <span class="sd">    You can read annotations from a file.</span>
 
-<span class="sd">    .. code-block: python</span>
+<span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        import brat_reader as br</span>
-<span class="sd">        anns = br.BratAnnotations.from_file(&quot;path/to/file.ann&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; import brat_reader as br</span>
+<span class="sd">        &gt;&gt;&gt; anns = br.BratAnnotations.from_file(&quot;path/to/file.ann&quot;)</span>
 
 <span class="sd">    You can also create a set of annotations from Event instances.</span>
 
-<span class="sd">    .. code-block: python</span>
+<span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        import brat_reader as br</span>
-<span class="sd">        event1 = Event(&quot;E1&quot;, *e1spans)</span>
-<span class="sd">        event2 = Event(&quot;E2&quot;, *e2spans)</span>
-<span class="sd">        anns = br.BratAnnotations.from_events([event1, event2])</span>
+<span class="sd">        &gt;&gt;&gt; import brat_reader as br</span>
+<span class="sd">        &gt;&gt;&gt; event1 = Event(&quot;E1&quot;, *e1spans)</span>
+<span class="sd">        &gt;&gt;&gt; event2 = Event(&quot;E2&quot;, *e2spans)</span>
+<span class="sd">        &gt;&gt;&gt; anns = br.BratAnnotations.from_events([event1, event2])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BratAnnotations.from_file"><a class="viewcode-back" href="../index.html#brat_reader.BratAnnotations.from_file">[docs]</a>    <span class="nd">@classmethod</span>
@@ -595,11 +605,47 @@
 <span class="sd">    file of brat annotations.</span>
 
 <span class="sd">    Specify plain text, split sentences, or both.</span>
-<span class="sd">    &gt;&gt;&gt; bt = BratText(text=plain_text, sentences=list_of_sents)</span>
-<span class="sd">    &gt;&gt;&gt; bt.text[0:12]  # Plain text at character indices 0 through 12</span>
-<span class="sd">    &gt;&gt;&gt; bt.tokens(0, 12)  # Tokens spanning character indices 0 through 12</span>
-<span class="sd">    &gt;&gt;&gt; bt.sentences(0, 12)  # Sentences spanning character indices 0 - 12</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; bt = BratText(text=plain_text, sentences=list_of_sents)</span>
+<span class="sd">        &gt;&gt;&gt; bt.text(0, 12)  # Plain text at character indices 0 through 12</span>
+<span class="sd">        &gt;&gt;&gt; bt.tokens(0, 12)  # Tokens spanning character indices 0 through 12</span>
+<span class="sd">        &gt;&gt;&gt; bt.sentences(0, 12)  # Sentences spanning character indices 0 - 12</span>
+
+<span class="sd">    `sentences` can also be a json lines file with the following format:</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        {&quot;sent_index&quot;: int  # the number of this sentence in the document</span>
+<span class="sd">         &quot;start_char&quot;: int  # the character offset of the start of the sentence</span>
+<span class="sd">         &quot;end_char&quot;: int    # the character offset of the end of the sentence</span>
+<span class="sd">         &quot;_text&quot;:           # the sentence text</span>
+<span class="sd">        }</span>
+
+<span class="sd">    You can also access the text using Annotation instances</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; anns = BratAnnotations.from_file(&quot;path/to/file1.ann&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; bt = BratText.from_files(text=&quot;path/to/file1.txt&quot;, sentences=&quot;path/to/file1.jsonl&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; bt.text(annotations=[anns.spans[0]])  # get the text of the first span</span>
+<span class="sd">        &gt;&gt;&gt; bt.tokens(annotations=anns.spans[0:3])  # tokens from the first three spans</span>
+<span class="sd">        &gt;&gt;&gt; bt.sentences(annotations=anns.events[:])  # Sentences containing all events</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BratText.from_files"><a class="viewcode-back" href="../index.html#brat_reader.BratText.from_files">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_files</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sentences</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must specify at least one of text, sentences&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sentences</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)]</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+                <span class="n">sentences</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="n">sentences</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sentences</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Must supply at least one of text or sentences&quot;</span><span class="p">)</span>
@@ -607,16 +653,77 @@
         <span class="k">if</span> <span class="n">sentences</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sentences_lookup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_sentences</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_text_from_sentences</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_text_from_sentences</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_text</span> <span class="o">=</span> <span class="n">text</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tokenizer</span><span class="p">(</span><span class="n">tokenizer</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tokens</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tokens_lookup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tokens_lookup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_text</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BratText.sentences"><a class="viewcode-back" href="../index.html#brat_reader.BratText.sentences">[docs]</a>    <span class="k">def</span> <span class="nf">sentences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_char</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_char</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text</span>
+
+<div class="viewcode-block" id="BratText.text"><a class="viewcode-back" href="../index.html#brat_reader.BratText.text">[docs]</a>    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_char</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_char</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_char</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_char</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">)</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Ignoring {start,end}_char since Annotation was provided.&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+            <span class="n">start_char</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">ann</span><span class="o">.</span><span class="n">start_index</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+            <span class="n">end_char</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">ann</span><span class="o">.</span><span class="n">end_index</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">end_char</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">end_char</span> <span class="o">=</span> <span class="n">start_char</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start_char</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text</span><span class="p">[</span><span class="n">start_char</span><span class="p">:</span><span class="n">end_char</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="BratText.tokens"><a class="viewcode-back" href="../index.html#brat_reader.BratText.tokens">[docs]</a>    <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_char</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_char</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_char</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_char</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">)</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Ignoring {start,end}_char since Annotation was provided.&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+            <span class="n">start_char</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">ann</span><span class="o">.</span><span class="n">start_index</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+            <span class="n">end_char</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">ann</span><span class="o">.</span><span class="n">end_index</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">end_char</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">end_char</span> <span class="o">=</span> <span class="n">start_char</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start_char</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">char_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_char</span><span class="p">,</span> <span class="n">end_char</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokens_lookup</span><span class="p">[</span><span class="n">char_i</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">!=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tokens</span></div>
+
+<div class="viewcode-block" id="BratText.sentences"><a class="viewcode-back" href="../index.html#brat_reader.BratText.sentences">[docs]</a>    <span class="k">def</span> <span class="nf">sentences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_char</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end_char</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_split_into_sentences</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Text is not split into sentences.&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_char</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_char</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">)</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Ignoring {start,end}_char since Annotation was provided.&quot;</span><span class="p">)</span>  <span class="c1"># noqa</span>
+            <span class="n">start_char</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">ann</span><span class="o">.</span><span class="n">start_index</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+            <span class="n">end_char</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="n">ann</span><span class="o">.</span><span class="n">end_index</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">end_char</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sentences_lookup</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
@@ -633,25 +740,6 @@
             <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sents</span><span class="p">:</span>
                 <span class="n">sents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sents</span></div>
-
-<div class="viewcode-block" id="BratText.tokens"><a class="viewcode-back" href="../index.html#brat_reader.BratText.tokens">[docs]</a>    <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_char</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_char</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">end_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">end_char</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">end_char</span> <span class="o">=</span> <span class="n">start_char</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">start_char</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">char_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_char</span><span class="p">,</span> <span class="n">end_char</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tokens_lookup</span><span class="p">[</span><span class="n">char_i</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">!=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">tokens</span></div>
 
     <span class="k">def</span> <span class="nf">_get_text_from_sentences</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -710,12 +798,12 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A very simple tokenizer that splits on whitespace by default.</span>
 
-<span class="sd">    .. code-block: python</span>
+<span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        import brat_reader as br</span>
-<span class="sd">        tokenizer = br.RegexTokenizer()</span>
-<span class="sd">        text = &quot;The cat in the hat&quot;</span>
-<span class="sd">        tokens, token_char_ranges = tokenizer(text)</span>
+<span class="sd">        &gt;&gt;&gt; import brat_reader as br</span>
+<span class="sd">        &gt;&gt;&gt; tokenizer = br.RegexTokenizer()</span>
+<span class="sd">        &gt;&gt;&gt; text = &quot;The cat in the hat&quot;</span>
+<span class="sd">        &gt;&gt;&gt; tokens, token_char_ranges = tokenizer(text)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split_pattern</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\s&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">split_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">split_pattern</span><span class="p">)</span>

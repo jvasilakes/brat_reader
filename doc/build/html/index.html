@@ -35,7 +35,7 @@
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p><cite>brat_reader</cite> has no external dependencies. Install it with</p>
+<p><cite>brat_reader</cite> is written for Python 3 and has no external dependencies. Install it with</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop
 </pre></div>
 </div>
@@ -78,8 +78,8 @@ as shown above, or for a <cite>BratAnnotations</cite> instance.</p>
 <span class="go">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<p>New! You can specify either raw text or sentence-segmented JSONL format text.
-This allows you to easily cross-reference annotations with their associated text spans.</p>
+<p>New! You can specify raw text and/or sentence-segmented text,
+which allows you to easily cross-reference annotations with their associated text spans.</p>
 <p>JSONL formatted sentences</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$&gt; cat sentences.jsonl
 
@@ -89,16 +89,16 @@ This allows you to easily cross-reference annotations with their associated text
 <span class="s2"> &quot;</span>_text<span class="s2">&quot;: &quot;</span>The cat sat on the mat.<span class="s2">&quot;}</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file.ann&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;path/to/sentences.jsonl&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">some_event</span> <span class="o">=</span> <span class="n">anns</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">some_event</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file.ann&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">anntxt</span> <span class="o">=</span> <span class="n">BratText</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;path/to/file.txt&quot;</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="s2">&quot;path/to/file.jsonl&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">anns</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="gp">... </span><span class="s2">&quot;E1      SIT:T2 Animal:T1 Location:T3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">event_sentences</span> <span class="o">=</span> <span class="n">anns</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">sentences</span><span class="p">(</span><span class="n">some_event</span><span class="o">.</span><span class="n">start_index</span><span class="p">,</span> <span class="n">some_event</span><span class="o">.</span><span class="n">end_index</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_sentences</span> <span class="o">=</span> <span class="n">annstxt</span><span class="o">.</span><span class="n">sentences</span><span class="p">(</span><span class="n">anns</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">event_sentences</span><span class="p">)</span>
 <span class="gp">... </span><span class="p">[{</span><span class="s2">&quot;sent_index&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-<span class="gp">... </span> <span class="s2">&quot;start_index&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-<span class="gp">... </span> <span class="s2">&quot;end_index&quot;</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
-<span class="gp">... </span> <span class="s2">&quot;_text&quot;</span><span class="p">:</span> <span class="s2">&quot;The cat sat on the mat.&quot;</span><span class="p">}]</span>
+<span class="gp">... </span>  <span class="s2">&quot;start_char&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">... </span>  <span class="s2">&quot;end_char&quot;</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+<span class="gp">... </span>  <span class="s2">&quot;_text&quot;</span><span class="p">:</span> <span class="s2">&quot;The cat sat on the mat.&quot;</span><span class="p">}]</span>
 </pre></div>
 </div>
 </div>
@@ -108,8 +108,9 @@ This allows you to easily cross-reference annotations with their associated text
 </div>
 <span class="target" id="module-brat_reader"></span><dl class="class">
 <dt id="brat_reader.Annotation">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Annotation</code><span class="sig-paren">(</span><em>_id</em>, <em>_type</em>, <em>_source_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base class for brat annotations.
+<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Annotation</code><span class="sig-paren">(</span><em>_id: str</em>, <em>_type: str</em>, <em>_source_file: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The base class for brat annotations.
 Use Span, Event, or Attribute instead of this class.</p>
 <dl class="method">
 <dt id="brat_reader.Annotation.copy">
@@ -145,8 +146,9 @@ Use Span, Event, or Attribute instead of this class.</p>
 
 <dl class="class">
 <dt id="brat_reader.Attribute">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Attribute</code><span class="sig-paren">(</span><em>_id</em>, <em>value</em>, <em>reference</em>, <em>_type='Attribute'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>A brat attribute. Can be attached to Spans or Events.</p>
+<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Attribute</code><span class="sig-paren">(</span><em>_id</em>, <em>value</em>, <em>reference=None</em>, <em>_type='Attribute'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">brat_reader.Annotation</span></code></a></p>
+<p>A brat attribute. Can be attached to Spans or Events.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -202,9 +204,20 @@ of the reference of this Attribute. Default False.</td>
 <dl class="class">
 <dt id="brat_reader.BratAnnotations">
 <em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">BratAnnotations</code><span class="sig-paren">(</span><em>spans</em>, <em>events</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations" title="Permalink to this definition">¶</a></dt>
-<dd><p>The main class for working with brat annotations.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The main class for working with brat annotations.</p>
 <p>You can read annotations from a file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brat_reader</span> <span class="kn">as</span> <span class="nn">br</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file.ann&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>You can also create a set of annotations from Event instances.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brat_reader</span> <span class="kn">as</span> <span class="nn">br</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event1</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">e1spans</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event2</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="s2">&quot;E2&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">e2spans</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_events</span><span class="p">([</span><span class="n">event1</span><span class="p">,</span> <span class="n">event2</span><span class="p">])</span>
+</pre></div>
+</div>
 <dl class="attribute">
 <dt id="brat_reader.BratAnnotations.attributes">
 <code class="descname">attributes</code><a class="headerlink" href="#brat_reader.BratAnnotations.attributes" title="Permalink to this definition">¶</a></dt>
@@ -316,21 +329,50 @@ attempts to use the Annotation._source_file.</li>
 <dl class="class">
 <dt id="brat_reader.BratText">
 <em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">BratText</code><span class="sig-paren">(</span><em>text=None</em>, <em>sentences=None</em>, <em>tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple class for organizing the text that corresponds to a
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A simple class for organizing the text that corresponds to a
 file of brat annotations.</p>
-<p>Specify plain text, split sentences, or both.
-&gt;&gt;&gt; bt = BratText(text=plain_text, sentences=list_of_sents)
-&gt;&gt;&gt; bt.text[0:12]  # Plain text at character indices 0 through 12
-&gt;&gt;&gt; bt.tokens(0, 12)  # Tokens spanning character indices 0 through 12
-&gt;&gt;&gt; bt.sentences(0, 12)  # Sentences spanning character indices 0 - 12</p>
+<p>Specify plain text, split sentences, or both.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span> <span class="o">=</span> <span class="n">BratText</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">plain_text</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="n">list_of_sents</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>  <span class="c1"># Plain text at character indices 0 through 12</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">tokens</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>  <span class="c1"># Tokens spanning character indices 0 through 12</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">sentences</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>  <span class="c1"># Sentences spanning character indices 0 - 12</span>
+</pre></div>
+</div>
+<p><cite>sentences</cite> can also be a json lines file with the following format:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;sent_index&quot;</span>: int  <span class="c1"># the number of this sentence in the document</span>
+ <span class="s2">&quot;start_char&quot;</span>: int  <span class="c1"># the character offset of the start of the sentence</span>
+ <span class="s2">&quot;end_char&quot;</span>: int    <span class="c1"># the character offset of the end of the sentence</span>
+ <span class="s2">&quot;_text&quot;</span>:           <span class="c1"># the sentence text</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>You can also access the text using Annotation instances</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file1.ann&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span> <span class="o">=</span> <span class="n">BratText</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;path/to/file1.txt&quot;</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="s2">&quot;path/to/file1.jsonl&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="p">[</span><span class="n">anns</span><span class="o">.</span><span class="n">spans</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>  <span class="c1"># get the text of the first span</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">tokens</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="n">anns</span><span class="o">.</span><span class="n">spans</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># tokens from the first three spans</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bt</span><span class="o">.</span><span class="n">sentences</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="n">anns</span><span class="o">.</span><span class="n">events</span><span class="p">[:])</span>  <span class="c1"># Sentences containing all events</span>
+</pre></div>
+</div>
+<dl class="classmethod">
+<dt id="brat_reader.BratText.from_files">
+<em class="property">classmethod </em><code class="descname">from_files</code><span class="sig-paren">(</span><em>text=None</em>, <em>sentences=None</em>, <em>tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.from_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.from_files" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="brat_reader.BratText.sentences">
-<code class="descname">sentences</code><span class="sig-paren">(</span><em>start_char=None</em>, <em>end_char=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.sentences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.sentences" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sentences</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[brat_reader.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.sentences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.sentences" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="brat_reader.BratText.text">
+<code class="descname">text</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[brat_reader.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.text" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="brat_reader.BratText.tokens">
-<code class="descname">tokens</code><span class="sig-paren">(</span><em>start_char=None</em>, <em>end_char=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.tokens" title="Permalink to this definition">¶</a></dt>
+<code class="descname">tokens</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[brat_reader.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.tokens" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -338,7 +380,8 @@ file of brat annotations.</p>
 <dl class="class">
 <dt id="brat_reader.Event">
 <em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>_id</em>, <em>*spans</em>, <em>attributes=None</em>, <em>_type='Event'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Event" title="Permalink to this definition">¶</a></dt>
-<dd><p>A brat event, composed of one or more ordered Span instances.
+<dd><p>Bases: <a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">brat_reader.Annotation</span></code></a></p>
+<p>A brat event, composed of one or more ordered Span instances.
 brat_reader does not enforce any specific Event structure.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -390,13 +433,21 @@ of the Spans and Attributes of this Event. Default False.</td>
 <dl class="class">
 <dt id="brat_reader.RegexTokenizer">
 <em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">RegexTokenizer</code><span class="sig-paren">(</span><em>split_pattern='\s'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#RegexTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.RegexTokenizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>A very simple tokenizer that splits on whitespace by default.</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A very simple tokenizer that splits on whitespace by default.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brat_reader</span> <span class="kn">as</span> <span class="nn">br</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The cat in the hat&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span><span class="p">,</span> <span class="n">token_char_ranges</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="class">
 <dt id="brat_reader.Span">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>_id</em>, <em>start_index</em>, <em>end_index</em>, <em>text</em>, <em>_type='Span'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Span" title="Permalink to this definition">¶</a></dt>
-<dd><p>A brat span. I.e., a span of text.</p>
+<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>_id: str</em>, <em>start_index: int</em>, <em>end_index: int</em>, <em>text: str</em>, <em>_type: str = 'Span'</em>, <em>_source_file: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">brat_reader.Annotation</span></code></a></p>
+<p>A brat span. I.e., a span of text.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

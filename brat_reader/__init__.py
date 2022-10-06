@@ -1,8 +1,11 @@
 import re
 import os
 import html
+import json
+import warnings
 from collections import defaultdict
 from pathlib import Path
+from typing import List
 
 
 class Annotation(object):
@@ -164,10 +167,10 @@ class Attribute(Annotation):
     :param str _source_file: (Optional), the name of the .ann file which
                              contains this span.
     """
-    def __init__(self, _id, value, reference,
+    def __init__(self, _id, value, reference=None,
                  _type="Attribute", _source_file=None):
         super().__init__(_id=_id, _type=_type, _source_file=_source_file)
-        assert isinstance(reference, Annotation)
+        assert isinstance(reference, (type(None), Annotation))
         self.value = value
         self.reference = reference
         if not isinstance(self.reference, (Span, Event, type(None))):
@@ -319,19 +322,19 @@ class BratAnnotations(object):
 
     You can read annotations from a file.
 
-    .. code-block: python
+    .. code-block:: python
 
-        import brat_reader as br
-        anns = br.BratAnnotations.from_file("path/to/file.ann")
+        >>> import brat_reader as br
+        >>> anns = br.BratAnnotations.from_file("path/to/file.ann")
 
     You can also create a set of annotations from Event instances.
 
-    .. code-block: python
+    .. code-block:: python
 
-        import brat_reader as br
-        event1 = Event("E1", *e1spans)
-        event2 = Event("E2", *e2spans)
-        anns = br.BratAnnotations.from_events([event1, event2])
+        >>> import brat_reader as br
+        >>> event1 = Event("E1", *e1spans)
+        >>> event2 = Event("E2", *e2spans)
+        >>> anns = br.BratAnnotations.from_events([event1, event2])
     """
 
     @classmethod
@@ -570,11 +573,47 @@ class BratText(object):
     file of brat annotations.
 
     Specify plain text, split sentences, or both.
-    >>> bt = BratText(text=plain_text, sentences=list_of_sents)
-    >>> bt.text[0:12]  # Plain text at character indices 0 through 12
-    >>> bt.tokens(0, 12)  # Tokens spanning character indices 0 through 12
-    >>> bt.sentences(0, 12)  # Sentences spanning character indices 0 - 12
+
+    .. code-block:: python
+
+        >>> bt = BratText(text=plain_text, sentences=list_of_sents)
+        >>> bt.text(0, 12)  # Plain text at character indices 0 through 12
+        >>> bt.tokens(0, 12)  # Tokens spanning character indices 0 through 12
+        >>> bt.sentences(0, 12)  # Sentences spanning character indices 0 - 12
+
+    `sentences` can also be a json lines file with the following format:
+
+    .. code-block:: bash
+
+        {"sent_index": int  # the number of this sentence in the document
+         "start_char": int  # the character offset of the start of the sentence
+         "end_char": int    # the character offset of the end of the sentence
+         "_text":           # the sentence text
+        }
+
+    You can also access the text using Annotation instances
+
+    .. code-block:: python
+
+        >>> anns = BratAnnotations.from_file("path/to/file1.ann")
+        >>> bt = BratText.from_files(text="path/to/file1.txt", sentences="path/to/file1.jsonl")
+        >>> bt.text(annotations=[anns.spans[0]])  # get the text of the first span
+        >>> bt.tokens(annotations=anns.spans[0:3])  # tokens from the first three spans
+        >>> bt.sentences(annotations=anns.events[:])  # Sentences containing all events
     """
+    @classmethod
+    def from_files(cls, text=None, sentences=None, tokenizer=None):
+        if text is None and sentences is None:
+            raise ValueError("Must specify at least one of text, sentences")
+        if text is not None:
+            text = open(text, 'r').read()
+        if sentences is not None:
+            try:
+                sentences = [json.loads(line) for line in open(sentences, 'r')]
+            except json.JSONDecodeError:
+                sentences = open(sentences, 'r').readlines()
+        return cls(text=text, sentences=sentences, tokenizer=tokenizer)
+
     def __init__(self, text=None, sentences=None, tokenizer=None):
         if text is None and sentences is None:
             raise ValueError("Must supply at least one of text or sentences")
@@ -582,16 +621,77 @@ class BratText(object):
         if sentences is not None:
             self._sentences_lookup = self._split_sentences(sentences)
         if text is None:
-            self.text = self._get_text_from_sentences()
+            self._text = self._get_text_from_sentences()
         else:
-            self.text = text
+            self._text = text
         self.tokenizer = self._get_tokenizer(tokenizer)
         self._tokens = None
-        self._tokens_lookup = self._tokenize(self.text)
+        self._tokens_lookup = self._tokenize(self._text)
 
-    def sentences(self, start_char=None, end_char=None):
+    def __str__(self):
+        return self._text
+
+    def text(self, start_char: int = None, end_char: int = None,
+             annotations: List[Annotation] = []):
+        assert isinstance(start_char, (type(None), int))
+        assert isinstance(end_char, (type(None), int))
+        assert all([isinstance(ann, Annotation) for ann in annotations])
+        if len(annotations) > 0:
+            if start_char is not None or end_char is not None:
+                warnings.warn("Ignoring {start,end}_char since Annotation was provided.")  # noqa
+            start_char = min([ann.start_index for ann in annotations])
+            end_char = max([ann.end_index for ann in annotations])
+        if end_char is None:
+            if start_char is None:
+                end_char = len(self._text)
+            else:
+                end_char = start_char + 1
+        if start_char is None:
+            start_char = 0
+        return self._text[start_char:end_char]
+
+    def tokens(self, start_char: int = None, end_char: int = None,
+               annotations: List[Annotation] = []):
+        assert isinstance(start_char, (type(None), int))
+        assert isinstance(end_char, (type(None), int))
+        assert all([isinstance(ann, Annotation) for ann in annotations])
+        if len(annotations) > 0:
+            if start_char is not None or end_char is not None:
+                warnings.warn("Ignoring {start,end}_char since Annotation was provided.")  # noqa
+            start_char = min([ann.start_index for ann in annotations])
+            end_char = max([ann.end_index for ann in annotations])
+
+        if end_char is None:
+            if start_char is None:
+                end_char = len(self._text)
+            else:
+                end_char = start_char + 1
+        if start_char is None:
+            start_char = 0
+
+        tokens = []
+        for char_i in range(start_char, end_char):
+            try:
+                t = self._tokens_lookup[char_i]
+            except KeyError:
+                continue
+            if len(tokens) == 0 or t != tokens[-1]:
+                tokens.append(t)
+        return tokens
+
+    def sentences(self, start_char: int = None, end_char: int = None,
+                  annotations: List[Annotation] = []):
         if self.is_split_into_sentences is False:
             raise ValueError("Text is not split into sentences.")
+        assert isinstance(start_char, (type(None), int))
+        assert isinstance(end_char, (type(None), int))
+        assert all([isinstance(ann, Annotation) for ann in annotations])
+        if len(annotations) > 0:
+            if start_char is not None or end_char is not None:
+                warnings.warn("Ignoring {start,end}_char since Annotation was provided.")  # noqa
+            start_char = min([ann.start_index for ann in annotations])
+            end_char = max([ann.end_index for ann in annotations])
+
         if end_char is None:
             if start_char is None:
                 end_char = max(list(self._sentences_lookup.keys()))
@@ -608,25 +708,6 @@ class BratText(object):
             if s not in sents:
                 sents.append(s)
         return sents
-
-    def tokens(self, start_char=None, end_char=None):
-        if end_char is None:
-            if start_char is None:
-                end_char = len(self.text)
-            else:
-                end_char = start_char + 1
-        if start_char is None:
-            start_char = 0
-
-        tokens = []
-        for char_i in range(start_char, end_char):
-            try:
-                t = self._tokens_lookup[char_i]
-            except KeyError:
-                continue
-            if len(tokens) == 0 or t != tokens[-1]:
-                tokens.append(t)
-        return tokens
 
     def _get_text_from_sentences(self):
         text = ''
@@ -685,12 +766,12 @@ class RegexTokenizer(object):
     """
     A very simple tokenizer that splits on whitespace by default.
 
-    .. code-block: python
+    .. code-block:: python
 
-        import brat_reader as br
-        tokenizer = br.RegexTokenizer()
-        text = "The cat in the hat"
-        tokens, token_char_ranges = tokenizer(text)
+        >>> import brat_reader as br
+        >>> tokenizer = br.RegexTokenizer()
+        >>> text = "The cat in the hat"
+        >>> tokens, token_char_ranges = tokenizer(text)
     """
     def __init__(self, split_pattern=r'\s'):
         self.split_pattern = re.compile(split_pattern)
