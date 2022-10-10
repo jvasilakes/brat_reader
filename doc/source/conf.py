@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'brat_reader'
+project = 'pybrat'
 copyright = '2022, Jake Vasilakes'
 author = 'Jake Vasilakes'
 
@@ -104,7 +104,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'brat_readerdoc'
+htmlhelp_basename = 'pybratdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -131,7 +131,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'brat_reader.tex', 'brat\\_reader Documentation',
+    (master_doc, 'pybrat.tex', 'pybrat Documentation',
      'Jake Vasilakes', 'manual'),
 ]
 
@@ -141,7 +141,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'brat_reader', 'brat_reader Documentation',
+    (master_doc, 'pybrat', 'pybrat Documentation',
      [author], 1)
 ]
 
@@ -152,8 +152,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'brat_reader', 'brat_reader Documentation',
-     author, 'brat_reader', 'One line description of project.',
+    (master_doc, 'pybrat', 'pybrat Documentation',
+     author, 'pybrat', 'One line description of project.',
      'Miscellaneous'),
 ]
 

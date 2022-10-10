@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Brat Reader &#8212; brat_reader 0.1.0 documentation</title>
+    <title>pybrat &#8212; pybrat 0.1.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,13 +29,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="brat-reader">
-<h1>Brat Reader<a class="headerlink" href="#brat-reader" title="Permalink to this headline">¶</a></h1>
-<p><cite>brat_reader</cite> is a simple package for reading brat-formatted text annotations (<a class="reference external" href="https://brat.nlplab.org/">https://brat.nlplab.org/</a>).</p>
+  <div class="section" id="pybrat">
+<h1>pybrat<a class="headerlink" href="#pybrat" title="Permalink to this headline">¶</a></h1>
+<p><cite>pybrat</cite> is a simple package for reading brat-formatted text annotations.</p>
+<p><a class="reference external" href="https://github.com/jvasilakes/pybrat">https://github.com/jvasilakes/pybrat</a></p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p><cite>brat_reader</cite> is written for Python 3 and has no external dependencies. Install it with</p>
+<p><cite>pybrat</cite> is written for Python 3 and has no external dependencies. Install it with</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py develop
 </pre></div>
 </div>
@@ -49,9 +50,9 @@
 </div>
 <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>The <cite>brat_reader.BratAnnotations</cite> class automatically links events to their associated text spans and attributes.
+<p>The <cite>pybrat.BratAnnotations</cite> class automatically links events to their associated text spans and attributes.
 Parse a <cite>.ann</cite> file and iterate through the contents with</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">brat_reader</span> <span class="kn">import</span> <span class="n">BratAnnotations</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybrat</span> <span class="kn">import</span> <span class="n">BratAnnotations</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;/path/to/file.ann&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">anns</span><span class="p">:</span>
 <span class="gp">&gt;&gt;&gt; </span>   <span class="k">print</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
@@ -89,7 +90,7 @@ which allows you to easily cross-reference annotations with their associated tex
 <span class="s2"> &quot;</span>_text<span class="s2">&quot;: &quot;</span>The cat sat on the mat.<span class="s2">&quot;}</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">brat_reader</span> <span class="kn">import</span> <span class="n">BratAnnotations</span><span class="p">,</span> <span class="n">BratText</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pybrat</span> <span class="kn">import</span> <span class="n">BratAnnotations</span><span class="p">,</span> <span class="n">BratText</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file.ann&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">anntxt</span> <span class="o">=</span> <span class="n">BratText</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;path/to/file.txt&quot;</span><span class="p">,</span> <span class="n">sentences</span><span class="o">=</span><span class="s2">&quot;path/to/file.jsonl&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">anns</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -107,48 +108,48 @@ which allows you to easily cross-reference annotations with their associated tex
 <h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-brat_reader"></span><dl class="class">
-<dt id="brat_reader.Annotation">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Annotation</code><span class="sig-paren">(</span><em>_id: str</em>, <em>_type: str</em>, <em>_source_file: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-pybrat"></span><dl class="class">
+<dt id="pybrat.Annotation">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">Annotation</code><span class="sig-paren">(</span><em>_id: str</em>, <em>_type: str</em>, <em>_source_file: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Annotation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The base class for brat annotations.
 Use Span, Event, or Attribute instead of this class.</p>
 <dl class="method">
-<dt id="brat_reader.Annotation.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Annotation.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Annotation.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Annotation.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.Annotation.id">
-<code class="descname">id</code><a class="headerlink" href="#brat_reader.Annotation.id" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Annotation.id">
+<code class="descname">id</code><a class="headerlink" href="#pybrat.Annotation.id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.Annotation.short_repr">
-<code class="descname">short_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation.short_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation.short_repr" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Annotation.short_repr">
+<code class="descname">short_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Annotation.short_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Annotation.short_repr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.Annotation.to_brat_str">
-<code class="descname">to_brat_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation.to_brat_str" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Annotation.to_brat_str">
+<code class="descname">to_brat_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Annotation.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Annotation.to_brat_str" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.Annotation.type">
-<code class="descname">type</code><a class="headerlink" href="#brat_reader.Annotation.type" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Annotation.type">
+<code class="descname">type</code><a class="headerlink" href="#pybrat.Annotation.type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.Annotation.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Annotation.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Annotation.update" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Annotation.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Annotation.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Annotation.update" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="brat_reader.Attribute">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Attribute</code><span class="sig-paren">(</span><em>_id</em>, <em>value</em>, <em>reference=None</em>, <em>_type='Attribute'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Attribute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">brat_reader.Annotation</span></code></a></p>
+<dt id="pybrat.Attribute">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">Attribute</code><span class="sig-paren">(</span><em>_id</em>, <em>value</em>, <em>reference=None</em>, <em>_type='Attribute'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pybrat.Annotation" title="pybrat.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">pybrat.Annotation</span></code></a></p>
 <p>A brat attribute. Can be attached to Spans or Events.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -158,7 +159,7 @@ Use Span, Event, or Attribute instead of this class.</p>
 <li><strong>_id</strong> (<em>str</em>) – the unique numerical identifier of this attribute with
 the ‘A’ prefix. E.g., ‘A5’.</li>
 <li><strong>value</strong> (<em>Any</em>) – the value of this attribute.</li>
-<li><strong>reference</strong> (<a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><em>Annotation</em></a>) – the corresponding Span or Event instance.</li>
+<li><strong>reference</strong> (<a class="reference internal" href="#pybrat.Annotation" title="pybrat.Annotation"><em>Annotation</em></a>) – the corresponding Span or Event instance.</li>
 <li><strong>_type</strong> (<em>str</em>) – (Optional) a string giving the type of this attribute.
 Default is ‘Attribute’.</li>
 <li><strong>_source_file</strong> (<em>str</em>) – (Optional), the name of the .ann file which
@@ -169,25 +170,25 @@ contains this span.</li>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="brat_reader.Attribute.end_index">
-<code class="descname">end_index</code><a class="headerlink" href="#brat_reader.Attribute.end_index" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Attribute.end_index">
+<code class="descname">end_index</code><a class="headerlink" href="#pybrat.Attribute.end_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ending character index of this Attribute’s reference.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.Attribute.span">
-<code class="descname">span</code><a class="headerlink" href="#brat_reader.Attribute.span" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Attribute.span">
+<code class="descname">span</code><a class="headerlink" href="#pybrat.Attribute.span" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.Attribute.start_index">
-<code class="descname">start_index</code><a class="headerlink" href="#brat_reader.Attribute.start_index" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Attribute.start_index">
+<code class="descname">start_index</code><a class="headerlink" href="#pybrat.Attribute.start_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>The starting character index of this Attribute’s reference.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.Attribute.to_brat_str">
-<code class="descname">to_brat_str</code><span class="sig-paren">(</span><em>output_references=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Attribute.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Attribute.to_brat_str" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Attribute.to_brat_str">
+<code class="descname">to_brat_str</code><span class="sig-paren">(</span><em>output_references=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Attribute.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Attribute.to_brat_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format this Attribute instance as a brat string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -203,49 +204,49 @@ of the reference of this Attribute. Default False.</td>
 </dd></dl>
 
 <dl class="class">
-<dt id="brat_reader.BratAnnotations">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">BratAnnotations</code><span class="sig-paren">(</span><em>spans</em>, <em>events</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">BratAnnotations</code><span class="sig-paren">(</span><em>spans</em>, <em>events</em>, <em>attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The main class for working with brat annotations.</p>
 <p>You can read annotations from a file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brat_reader</span> <span class="kn">as</span> <span class="nn">br</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file.ann&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pybrat</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">pybrat</span><span class="o">.</span><span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;path/to/file.ann&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can also create a set of annotations from Event instances.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brat_reader</span> <span class="kn">as</span> <span class="nn">br</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">event1</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">e1spans</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">event2</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="s2">&quot;E2&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">e2spans</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_events</span><span class="p">([</span><span class="n">event1</span><span class="p">,</span> <span class="n">event2</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pybrat</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event1</span> <span class="o">=</span> <span class="n">pybrat</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="s2">&quot;E1&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">e1spans</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event2</span> <span class="o">=</span> <span class="n">pybrat</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="s2">&quot;E2&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">e2spans</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">anns</span> <span class="o">=</span> <span class="n">pybrat</span><span class="o">.</span><span class="n">BratAnnotations</span><span class="o">.</span><span class="n">from_events</span><span class="p">([</span><span class="n">event1</span><span class="p">,</span> <span class="n">event2</span><span class="p">])</span>
 </pre></div>
 </div>
 <dl class="attribute">
-<dt id="brat_reader.BratAnnotations.attributes">
-<code class="descname">attributes</code><a class="headerlink" href="#brat_reader.BratAnnotations.attributes" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.attributes">
+<code class="descname">attributes</code><a class="headerlink" href="#pybrat.BratAnnotations.attributes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.BratAnnotations.events">
-<code class="descname">events</code><a class="headerlink" href="#brat_reader.BratAnnotations.events" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.events">
+<code class="descname">events</code><a class="headerlink" href="#pybrat.BratAnnotations.events" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
-<dt id="brat_reader.BratAnnotations.from_events">
-<em class="property">classmethod </em><code class="descname">from_events</code><span class="sig-paren">(</span><em>events_iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.from_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.from_events" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.from_events">
+<em class="property">classmethod </em><code class="descname">from_events</code><span class="sig-paren">(</span><em>events_iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.from_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.from_events" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a BratAnnotations instance from a collection of Events.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>events_iter</strong> (<em>List</em><em>[</em><a class="reference internal" href="#brat_reader.Event" title="brat_reader.Event"><em>Event</em></a><em>]</em>) – An iterable over Event instances.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>events_iter</strong> (<em>List</em><em>[</em><a class="reference internal" href="#pybrat.Event" title="pybrat.Event"><em>Event</em></a><em>]</em>) – An iterable over Event instances.</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="brat_reader.BratAnnotations.from_file">
-<em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.from_file" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.from_file">
+<em class="property">classmethod </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>fpath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.from_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read brat annotations from the specified file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -260,23 +261,23 @@ of the reference of this Attribute. Default False.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratAnnotations.get_attributes_by_type">
-<code class="descname">get_attributes_by_type</code><span class="sig-paren">(</span><em>attr_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.get_attributes_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.get_attributes_by_type" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.get_attributes_by_type">
+<code class="descname">get_attributes_by_type</code><span class="sig-paren">(</span><em>attr_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.get_attributes_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.get_attributes_by_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratAnnotations.get_context">
-<code class="descname">get_context</code><span class="sig-paren">(</span><em>ann: brat_reader.Annotation</em>, <em>window=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.get_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.get_context" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.get_context">
+<code class="descname">get_context</code><span class="sig-paren">(</span><em>ann: pybrat.Annotation</em>, <em>window=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.get_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.get_context" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratAnnotations.get_events_by_type">
-<code class="descname">get_events_by_type</code><span class="sig-paren">(</span><em>event_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.get_events_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.get_events_by_type" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.get_events_by_type">
+<code class="descname">get_events_by_type</code><span class="sig-paren">(</span><em>event_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.get_events_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.get_events_by_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratAnnotations.get_highest_level_annotations">
-<code class="descname">get_highest_level_annotations</code><span class="sig-paren">(</span><em>type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.get_highest_level_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.get_highest_level_annotations" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.get_highest_level_annotations">
+<code class="descname">get_highest_level_annotations</code><span class="sig-paren">(</span><em>type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.get_highest_level_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.get_highest_level_annotations" title="Permalink to this definition">¶</a></dt>
 <dd><p>brat annotations can include only spans, spans + events,
 or spans + events + attributes. This method allows one to
 get the highest-level annotation available in this file.</p>
@@ -297,13 +298,13 @@ Span</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratAnnotations.get_spans_by_type">
-<code class="descname">get_spans_by_type</code><span class="sig-paren">(</span><em>span_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.get_spans_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.get_spans_by_type" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.get_spans_by_type">
+<code class="descname">get_spans_by_type</code><span class="sig-paren">(</span><em>span_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.get_spans_by_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.get_spans_by_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratAnnotations.save_brat">
-<code class="descname">save_brat</code><span class="sig-paren">(</span><em>outdir</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratAnnotations.save_brat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratAnnotations.save_brat" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.save_brat">
+<code class="descname">save_brat</code><span class="sig-paren">(</span><em>outdir</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratAnnotations.save_brat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratAnnotations.save_brat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save these brat annotations to a brat-formatted file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -321,15 +322,15 @@ attempts to use the Annotation._source_file.</li>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.BratAnnotations.spans">
-<code class="descname">spans</code><a class="headerlink" href="#brat_reader.BratAnnotations.spans" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratAnnotations.spans">
+<code class="descname">spans</code><a class="headerlink" href="#pybrat.BratAnnotations.spans" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="brat_reader.BratText">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">BratText</code><span class="sig-paren">(</span><em>text=None</em>, <em>sentences=None</em>, <em>tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratText">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">BratText</code><span class="sig-paren">(</span><em>text=None</em>, <em>sentences=None</em>, <em>tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratText" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simple class for organizing the text that corresponds to a
 file of brat annotations.</p>
@@ -357,33 +358,33 @@ file of brat annotations.</p>
 </pre></div>
 </div>
 <dl class="classmethod">
-<dt id="brat_reader.BratText.from_files">
-<em class="property">classmethod </em><code class="descname">from_files</code><span class="sig-paren">(</span><em>text=None</em>, <em>sentences=None</em>, <em>tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.from_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.from_files" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratText.from_files">
+<em class="property">classmethod </em><code class="descname">from_files</code><span class="sig-paren">(</span><em>text=None</em>, <em>sentences=None</em>, <em>tokenizer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratText.from_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratText.from_files" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratText.sentences">
-<code class="descname">sentences</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[brat_reader.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.sentences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.sentences" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratText.sentences">
+<code class="descname">sentences</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[pybrat.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratText.sentences"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratText.sentences" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratText.text">
-<code class="descname">text</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[brat_reader.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.text" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratText.text">
+<code class="descname">text</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[pybrat.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratText.text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratText.text" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.BratText.tokens">
-<code class="descname">tokens</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[brat_reader.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#BratText.tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.BratText.tokens" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.BratText.tokens">
+<code class="descname">tokens</code><span class="sig-paren">(</span><em>start_char: int = None</em>, <em>end_char: int = None</em>, <em>annotations: List[pybrat.Annotation] = []</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#BratText.tokens"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.BratText.tokens" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="brat_reader.Event">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>_id</em>, <em>*spans</em>, <em>attributes=None</em>, <em>_type='Event'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">brat_reader.Annotation</span></code></a></p>
+<dt id="pybrat.Event">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>_id</em>, <em>*spans</em>, <em>attributes=None</em>, <em>_type='Event'</em>, <em>_source_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pybrat.Annotation" title="pybrat.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">pybrat.Annotation</span></code></a></p>
 <p>A brat event, composed of one or more ordered Span instances.
-brat_reader does not enforce any specific Event structure.</p>
+pybrat does not enforce any specific Event structure.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -391,7 +392,7 @@ brat_reader does not enforce any specific Event structure.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>_id</strong> (<em>str</em>) – the unique numerical identifier of this event
 with the E prefix. E.g., ‘E10’.</li>
-<li><strong>spans</strong> (<a class="reference internal" href="#brat_reader.Span" title="brat_reader.Span"><em>Span</em></a>) – one or more Span instances.</li>
+<li><strong>spans</strong> (<a class="reference internal" href="#pybrat.Span" title="pybrat.Span"><em>Span</em></a>) – one or more Span instances.</li>
 <li><strong>attributes</strong> (<em>dict</em>) – a dictionary of Attribute instances
 keyed by attribute type.</li>
 <li><strong>_type</strong> (<em>str</em>) – (Optional) A type for this Event. Default is ‘Event’.</li>
@@ -403,20 +404,20 @@ contains this span.</li>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="brat_reader.Event.end_index">
-<code class="descname">end_index</code><a class="headerlink" href="#brat_reader.Event.end_index" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Event.end_index">
+<code class="descname">end_index</code><a class="headerlink" href="#pybrat.Event.end_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>The highest character index of this Event’s spans.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="brat_reader.Event.start_index">
-<code class="descname">start_index</code><a class="headerlink" href="#brat_reader.Event.start_index" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Event.start_index">
+<code class="descname">start_index</code><a class="headerlink" href="#pybrat.Event.start_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>The lowest character index of this Event’s spans.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="brat_reader.Event.to_brat_str">
-<code class="descname">to_brat_str</code><span class="sig-paren">(</span><em>output_references=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Event.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Event.to_brat_str" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Event.to_brat_str">
+<code class="descname">to_brat_str</code><span class="sig-paren">(</span><em>output_references=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Event.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Event.to_brat_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format this Event instance as a brat string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -432,12 +433,12 @@ of the Spans and Attributes of this Event. Default False.</td>
 </dd></dl>
 
 <dl class="class">
-<dt id="brat_reader.RegexTokenizer">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">RegexTokenizer</code><span class="sig-paren">(</span><em>split_pattern='\s'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#RegexTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.RegexTokenizer" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.RegexTokenizer">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">RegexTokenizer</code><span class="sig-paren">(</span><em>split_pattern='\s'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#RegexTokenizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.RegexTokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A very simple tokenizer that splits on whitespace by default.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">brat_reader</span> <span class="kn">as</span> <span class="nn">br</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pybrat</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">pybrat</span><span class="o">.</span><span class="n">RegexTokenizer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;The cat in the hat&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tokens</span><span class="p">,</span> <span class="n">token_char_ranges</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
@@ -445,9 +446,9 @@ of the Spans and Attributes of this Event. Default False.</td>
 </dd></dl>
 
 <dl class="class">
-<dt id="brat_reader.Span">
-<em class="property">class </em><code class="descclassname">brat_reader.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>_id: str</em>, <em>start_index: int</em>, <em>end_index: int</em>, <em>text: str</em>, <em>_type: str = 'Span'</em>, <em>_source_file: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Span" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#brat_reader.Annotation" title="brat_reader.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">brat_reader.Annotation</span></code></a></p>
+<dt id="pybrat.Span">
+<em class="property">class </em><code class="descclassname">pybrat.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>_id: str</em>, <em>start_index: int</em>, <em>end_index: int</em>, <em>text: str</em>, <em>_type: str = 'Span'</em>, <em>_source_file: str = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pybrat.Annotation" title="pybrat.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">pybrat.Annotation</span></code></a></p>
 <p>A brat span. I.e., a span of text.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -471,8 +472,8 @@ contains this span.</li>
 </tbody>
 </table>
 <dl class="method">
-<dt id="brat_reader.Span.to_brat_str">
-<code class="descname">to_brat_str</code><span class="sig-paren">(</span><em>output_references=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#Span.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.Span.to_brat_str" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.Span.to_brat_str">
+<code class="descname">to_brat_str</code><span class="sig-paren">(</span><em>output_references=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#Span.to_brat_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.Span.to_brat_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format this Span instance as a brat string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -487,18 +488,18 @@ contains this span.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="brat_reader.parse_brat_attribute">
-<code class="descclassname">brat_reader.</code><code class="descname">parse_brat_attribute</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#parse_brat_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.parse_brat_attribute" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.parse_brat_attribute">
+<code class="descclassname">pybrat.</code><code class="descname">parse_brat_attribute</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#parse_brat_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.parse_brat_attribute" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="brat_reader.parse_brat_event">
-<code class="descclassname">brat_reader.</code><code class="descname">parse_brat_event</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#parse_brat_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.parse_brat_event" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.parse_brat_event">
+<code class="descclassname">pybrat.</code><code class="descname">parse_brat_event</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#parse_brat_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.parse_brat_event" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="brat_reader.parse_brat_span">
-<code class="descclassname">brat_reader.</code><code class="descname">parse_brat_span</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/brat_reader.html#parse_brat_span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#brat_reader.parse_brat_span" title="Permalink to this definition">¶</a></dt>
+<dt id="pybrat.parse_brat_span">
+<code class="descclassname">pybrat.</code><code class="descname">parse_brat_span</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pybrat.html#parse_brat_span"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pybrat.parse_brat_span" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -509,7 +510,7 @@ contains this span.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">brat_reader</a></h1>
+<h1 class="logo"><a href="#">pybrat</a></h1>
 
 
 

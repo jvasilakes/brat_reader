@@ -1,16 +1,18 @@
-.. brat_reader documentation master file, created by
+.. pybrat documentation master file, created by
    sphinx-quickstart on Fri Sep 30 16:12:12 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Brat Reader
+pybrat
 =======================================
 
-`brat_reader` is a simple package for reading brat-formatted text annotations (https://brat.nlplab.org/).
+`pybrat` is a simple package for reading brat-formatted text annotations.
+
+https://github.com/jvasilakes/pybrat
 
 Installation
 ============
-`brat_reader` is written for Python 3 and has no external dependencies. Install it with
+`pybrat` is written for Python 3 and has no external dependencies. Install it with
 
 .. code-block:: bash
 
@@ -29,12 +31,12 @@ Uninstallation
 Usage
 =====
 
-The `brat_reader.BratAnnotations` class automatically links events to their associated text spans and attributes.
+The `pybrat.BratAnnotations` class automatically links events to their associated text spans and attributes.
 Parse a `.ann` file and iterate through the contents with
 
 .. code-block:: python
 
-   >>> from brat_reader import BratAnnotations
+   >>> from pybrat import BratAnnotations
    >>> anns = BratAnnotations.from_file("/path/to/file.ann")
    >>> for ann in anns:
    >>> 	  print(ann)
@@ -80,7 +82,7 @@ JSONL formatted sentences
 
 .. code-block:: python
 
-   >>> from brat_reader import BratAnnotations, BratText
+   >>> from pybrat import BratAnnotations, BratText
    >>> anns = BratAnnotations.from_file("path/to/file.ann")
    >>> anntxt = BratText.from_files(text="path/to/file.txt", sentences="path/to/file.jsonl")
    >>> print(anns.events[0])
@@ -100,7 +102,7 @@ API
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: brat_reader
+.. automodule:: pybrat
    :members:
    :undoc-members:
    :show-inheritance:
