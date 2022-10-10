@@ -1,9 +1,9 @@
-`brat_reader` is a simple package for reading brat-formatted text annotations (https://brat.nlplab.org/).
+`pybrat` is a simple package for reading brat-formatted text annotations (https://brat.nlplab.org/).
 
-<https://brat-reader.readthedocs.io/>
+<https://pybrat.readthedocs.io/>
 
 # Installation
-`brat_reader` has no external dependencies. Install it with
+`pybrat` is written for Python 3 and has no external dependencies. Install it with
 
 ```
 python setup.py develop
@@ -20,11 +20,11 @@ python setup.py develop --uninstall
 
 # Usage
 
-The `brat_reader.BratAnnotations` class automatically links events to their associated text spans and attributes.
+The `pybrat.BratAnnotations` class automatically links events to their associated text spans and attributes.
 Parse a `.ann` file and iterate through the contents with
 
 ```python
->>> from brat_reader import BratAnnotations
+>>> from pybrat import BratAnnotations
 >>> anns = BratAnnotations.from_file("/path/to/file.ann")
 >>> for ann in anns:
 >>> 	  print(ann)
@@ -69,7 +69,7 @@ $> cat sentences.jsonl
 ```
 
 ```python
->>> from brat_reader import BratAnnotations, BratText
+>>> from pybrat import BratAnnotations, BratText
 >>> anns = BratAnnotations.from_file("path/to/file.ann")
 >>> anntxt = BratText.from_files(text="path/to/file.txt", sentences="path/to/file.jsonl")
 >>> print(anns.events[0])

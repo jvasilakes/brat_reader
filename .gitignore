@@ -1,2 +1,2 @@
-brat_reader/__pycache__
-
+pybrat/__pycache__
+*.egg-info

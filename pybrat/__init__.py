@@ -252,7 +252,7 @@ class Attribute(Annotation):
 class Event(Annotation):
     """
     A brat event, composed of one or more ordered Span instances.
-    brat_reader does not enforce any specific Event structure.
+    pybrat does not enforce any specific Event structure.
 
     :param str _id: the unique numerical identifier of this event
                     with the E prefix. E.g., 'E10'.
@@ -324,17 +324,17 @@ class BratAnnotations(object):
 
     .. code-block:: python
 
-        >>> import brat_reader as br
-        >>> anns = br.BratAnnotations.from_file("path/to/file.ann")
+        >>> import pybrat
+        >>> anns = pybrat.BratAnnotations.from_file("path/to/file.ann")
 
     You can also create a set of annotations from Event instances.
 
     .. code-block:: python
 
-        >>> import brat_reader as br
-        >>> event1 = Event("E1", *e1spans)
-        >>> event2 = Event("E2", *e2spans)
-        >>> anns = br.BratAnnotations.from_events([event1, event2])
+        >>> import pybrat
+        >>> event1 = pybrat.Event("E1", *e1spans)
+        >>> event2 = pybrat.Event("E2", *e2spans)
+        >>> anns = pybrat.BratAnnotations.from_events([event1, event2])
     """
 
     @classmethod
@@ -768,8 +768,8 @@ class RegexTokenizer(object):
 
     .. code-block:: python
 
-        >>> import brat_reader as br
-        >>> tokenizer = br.RegexTokenizer()
+        >>> import pybrat
+        >>> tokenizer = pybrat.RegexTokenizer()
         >>> text = "The cat in the hat"
         >>> tokens, token_char_ranges = tokenizer(text)
     """
