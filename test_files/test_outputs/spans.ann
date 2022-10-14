@@ -12,6 +12,7 @@ T4	Disposition 4234 4241	Lovenox
 T9	Disposition 4260 4270	protamine.
 T1	Disposition 6616 6628	beta-blocker
 T0	Disposition 7316 7324	Percocet
+A0	Type T0 medication
 T10	NoDisposition 7457 7463	Celexa
 T14	NoDisposition 8869 8915	lopressor for rate control; no anticoagulation
 T16	NoDisposition 11249 11263	insulin 70/30;

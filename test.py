@@ -8,14 +8,14 @@ def test_spans():
     anns = pybrat.BratAnnotations.from_file(
         "test_files/inputs/spans.ann")
     assert len(anns.spans) > 0
-    assert len(anns.attributes) == 0
+    assert len(anns.attributes) == 1
     assert len(anns.events) == 0
 
     anns.save_brat("test_files/test_outputs/")
     reread_anns = pybrat.BratAnnotations.from_file(
         "test_files/test_outputs/spans.ann")
     assert len(reread_anns.spans) > 0
-    assert len(reread_anns.attributes) == 0
+    assert len(reread_anns.attributes) == 1
     assert len(reread_anns.events) == 0
 
     gold_anns = pybrat.BratAnnotations.from_file(
@@ -25,32 +25,6 @@ def test_spans():
 
     gold_str = open("test_files/gold_outputs/spans.ann").read()
     ann_str = open("test_files/test_outputs/spans.ann").read()
-    assert gold_str == ann_str
-
-
-def test_attributes():
-    if os.path.isfile("test_files/test_outputs/attributes.ann"):
-        os.remove("test_files/test_outputs/attributes.ann")
-    anns = pybrat.BratAnnotations.from_file(
-        "test_files/inputs/attributes.ann")
-    assert len(anns.spans) > 0
-    assert len(anns.attributes) > 0
-    assert len(anns.events) == 0
-
-    anns.save_brat("test_files/test_outputs/")
-    reread_anns = pybrat.BratAnnotations.from_file(
-        "test_files/test_outputs/attributes.ann")
-    assert len(reread_anns.spans) > 0
-    assert len(reread_anns.attributes) > 0
-    assert len(reread_anns.events) == 0
-
-    gold_anns = pybrat.BratAnnotations.from_file(
-        "test_files/gold_outputs/attributes.ann")
-    assert gold_anns == anns
-    assert gold_anns == reread_anns
-
-    gold_str = open("test_files/gold_outputs/attributes.ann").read()
-    ann_str = open("test_files/test_outputs/attributes.ann").read()
     assert gold_str == ann_str
 
 
@@ -77,6 +51,32 @@ def test_events():
 
     gold_str = open("test_files/gold_outputs/events.ann").read()
     ann_str = open("test_files/test_outputs/events.ann").read()
+    assert gold_str == ann_str
+
+
+def test_attributes():
+    if os.path.isfile("test_files/test_outputs/attributes.ann"):
+        os.remove("test_files/test_outputs/attributes.ann")
+    anns = pybrat.BratAnnotations.from_file(
+        "test_files/inputs/attributes.ann")
+    assert len(anns.spans) > 0
+    assert len(anns.attributes) > 0
+    assert len(anns.events) == 1
+
+    anns.save_brat("test_files/test_outputs/")
+    reread_anns = pybrat.BratAnnotations.from_file(
+        "test_files/test_outputs/attributes.ann")
+    assert len(reread_anns.spans) > 0
+    assert len(reread_anns.attributes) > 0
+    assert len(reread_anns.events) == 1
+
+    gold_anns = pybrat.BratAnnotations.from_file(
+        "test_files/gold_outputs/attributes.ann")
+    assert gold_anns == anns
+    assert gold_anns == reread_anns
+
+    gold_str = open("test_files/gold_outputs/attributes.ann").read()
+    ann_str = open("test_files/test_outputs/attributes.ann").read()
     assert gold_str == ann_str
 
 
