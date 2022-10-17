@@ -317,8 +317,11 @@ class Event(Annotation):
             of the Spans and Attributes of this Event. Default False.
         """
         event_str = f"{self.id}\t"
-        for span in self.spans:
-            event_str += f"{self.type}:{span.id} "
+        for (i, span) in enumerate(self.spans):
+            spantype = span.type
+            if i == 0:
+                spantype = self.type
+            event_str += f"{spantype}:{span.id} "
         outlines = [event_str.strip()]
         if output_references is True:
             attr_strs = [a.to_brat_str(output_references=False)
@@ -881,10 +884,16 @@ def parse_brat_span(line):
 
 
 def parse_brat_event(line):
-    fields = line.split()
-    assert len(fields) >= 2
-    uid = fields[0]
-    spans = fields[1:]
+    uid, spans_str = line.split('\t')
+    if isinstance(spans_str, list):
+        # Sometimes we get attributes appended to the end
+        # E0\tSubject:T0 Object:T1\tSource:T001
+        # Ignore with warning for now
+        warnings.warn(f"Ignoring extra data {spans_str[1:]} for event {uid}")
+        spans_str = spans_str.split()[0]
+    spans = spans_str.split()
+    # There should be at least one span
+    assert len(spans) >= 1
     ref_spans = []
     label = None
     for span in spans:
