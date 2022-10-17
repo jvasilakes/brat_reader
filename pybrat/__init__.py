@@ -884,13 +884,15 @@ def parse_brat_span(line):
 
 
 def parse_brat_event(line):
-    uid, spans_str = line.split('\t')
-    if isinstance(spans_str, list):
+    fields = line.split('\t')
+    if len(fields) > 2:
         # Sometimes we get attributes appended to the end
         # E0\tSubject:T0 Object:T1\tSource:T001
         # Ignore with warning for now
-        warnings.warn(f"Ignoring extra data {spans_str[1:]} for event {uid}")
-        spans_str = spans_str.split()[0]
+        warnings.warn(f"Ignoring extra data {fields[2:]} for event {fields[0]}")  # noqa
+        fields = fields[:2]
+    uid = fields[0]
+    spans_str = fields[1]
     spans = spans_str.split()
     # There should be at least one span
     assert len(spans) >= 1
