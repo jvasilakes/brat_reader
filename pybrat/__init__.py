@@ -897,12 +897,14 @@ def parse_brat_event(line):
     # There should be at least one span
     assert len(spans) >= 1
     ref_spans = []
-    label = None
-    for span in spans:
+    event_label = None
+    for (i, span) in enumerate(spans):
         label, ref = span.split(':')
         ref_spans.append((label, ref))
+        if i == 0:
+            event_label = label
     return {"_id": uid,
-            "_type": label,
+            "_type": event_label,
             "ref_spans": ref_spans}
 
 
