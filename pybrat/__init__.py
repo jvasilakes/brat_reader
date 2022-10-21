@@ -3,6 +3,7 @@ import os
 import html
 import json
 import warnings
+from copy import deepcopy
 from collections import defaultdict
 from pathlib import Path
 from typing import List
@@ -85,7 +86,10 @@ class Annotation(object):
         return f"{class_name}({contents_str})"
 
     def copy(self):
-        return self.__class__(**self.__dict__)
+        """
+        Performs a deep copy of this annotation.
+        """
+        return deepcopy(self)
 
     @staticmethod
     def _resolve_file_path(path):
@@ -874,7 +878,14 @@ def parse_brat_span(line):
                 end_idx = end_idx_split[0]
     # start end
     else:
-        start_idx, end_idx, text = other.split(maxsplit=2)
+        tmp = other.split(maxsplit=2)
+        if len(tmp) == 3:
+            start_idx, end_idx, text = tmp
+        elif len(tmp) == 2:
+            start_idx, end_idx = tmp
+            text = ''
+        else:
+            raise ValueError(f"Improperly formatted span '{line}'")
 
     return {"_id": uid,
             "_type": label,
