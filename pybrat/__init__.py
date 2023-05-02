@@ -692,6 +692,8 @@ class BratText(object):
              annotations: List[Annotation] = []):
         assert isinstance(start_char, (type(None), int))
         assert isinstance(end_char, (type(None), int))
+        if not isinstance(annotations, list):
+            annotations = [annotations]
         assert all([isinstance(ann, Annotation) for ann in annotations])
         if len(annotations) > 0:
             if start_char is not None or end_char is not None:
@@ -711,6 +713,8 @@ class BratText(object):
                annotations: List[Annotation] = []):
         assert isinstance(start_char, (type(None), int))
         assert isinstance(end_char, (type(None), int))
+        if not isinstance(annotations, list):
+            annotations = [annotations]
         assert all([isinstance(ann, Annotation) for ann in annotations])
         if len(annotations) > 0:
             if start_char is not None or end_char is not None:
@@ -742,6 +746,8 @@ class BratText(object):
             raise ValueError("Text is not split into sentences.")
         assert isinstance(start_char, (type(None), int))
         assert isinstance(end_char, (type(None), int))
+        if not isinstance(annotations, list):
+            annotations = [annotations]
         assert all([isinstance(ann, Annotation) for ann in annotations])
         if len(annotations) > 0:
             if start_char is not None or end_char is not None:
