@@ -772,6 +772,25 @@ class BratText(object):
                 sents.append(s)
         return sents
 
+    def save(self, outdir, filename=None):
+        """
+        Save this BratText instance to a plain text file.
+
+        :param str outdir: The directory in which to save the file.
+        :param str filename: (Optional) The filename to use. If not specified,
+                             attempts to use the Annotation._source_file.
+        """
+        if filename is None and self._source_file is None:
+            raise ValueError("No filename specified.")
+        if filename is not None:
+            outfile = os.path.join(outdir, filename)
+        else:
+            bn = os.path.basename(self._source_file)
+            outfile = os.path.join(outdir, bn)
+        brat_str = str(self)
+        with open(outfile, 'a') as outF:
+            outF.write(brat_str + '\n')
+
     def _get_text_from_sentences(self):
         text = ''
         for sent in self.sentences():
