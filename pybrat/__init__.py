@@ -130,8 +130,9 @@ class Span(Annotation):
         self.start_index = start_index
         self.end_index = end_index
         self.text = text
-        self.attributes = attributes or {}
-        for attr in self.attributes.values():
+        self.attributes = {}
+        attributes = attributes or {}
+        for attr in attributes.values():
             attr.reference = self
 
     def __eq__(self, other):
@@ -167,6 +168,14 @@ class Span(Annotation):
             outlines.extend(attr_strs)
         brat_str = '\n'.join(outlines)
         return brat_str
+
+    def asdict(self):
+        return {'_id': self.id,
+                '_type': self.type,
+                'start_index': self.start_index,
+                'end_index': self.end_index,
+                'text': self.text,
+                '_source_file': self._source_file}
 
 
 class Attribute(Annotation):
@@ -266,6 +275,13 @@ class Attribute(Annotation):
         outlines.append(f"{self.id}\t{self.type} {ref_id} {self.value}")
         return '\n'.join(outlines)
 
+    def asdict(self):
+        return {'_id': self.id,
+                '_type': self.type,
+                'value': self.value,
+                'ref_id': self.reference.id,
+                '_source_file': self._source_file}
+
 
 class Event(Annotation):
     """
@@ -332,9 +348,15 @@ class Event(Annotation):
                          for a in self.attributes.values()]
             outlines.extend(attr_strs)
             for span in self.spans:
-                outlines.insert(0, span.to_brat_str())
+                outlines.insert(0, span.to_brat_str(output_references=True))
         brat_str = '\n'.join(outlines)
         return brat_str
+
+    def asdict(self):
+        return {'_id': self.id,
+                '_type': self.type,
+                'ref_spans': [(ref.type, ref.id) for ref in self.spans],
+                '_source_file': self._source_file}
 
 
 class BratAnnotations(object):
@@ -410,10 +432,11 @@ class BratAnnotations(object):
                 annotations._attributes.extend(span.attributes.values())
         return annotations
 
-    def __init__(self, spans, events, attributes, _source_file=None):
-        self._raw_spans = spans
-        self._raw_events = events
-        self._raw_attributes = attributes
+    def __init__(self, spans=None, events=None, attributes=None,
+                 _source_file=None):
+        self._raw_spans = spans or []
+        self._raw_events = events or []
+        self._raw_attributes = attributes or []
         self._spans = []  # Will hold Span instances
         self._attributes = []  # Will hold Attribute instances
         self._events = []  # Will hold Event instances
@@ -461,21 +484,15 @@ class BratAnnotations(object):
 
     @property
     def spans(self):
-        if self._sorted_spans is None:
-            self._sorted_spans = self._sort_spans_by_index()
-        return self._sorted_spans
+        return self._sort_spans_by_index()
 
     @property
     def attributes(self):
-        if self._sorted_attributes is None:
-            self._sorted_attributes = self._sort_attributes_by_span_index()
-        return self._sorted_attributes
+        return self._sort_attributes_by_span_index()
 
     @property
     def events(self):
-        if self._sorted_events is None:
-            self._sorted_events = self._sort_events_by_span_index()
-        return self._sorted_events
+        return self._sort_events_by_span_index()
 
     def __iter__(self):
         for ann in self.get_highest_level_annotations():
@@ -599,6 +616,33 @@ class BratAnnotations(object):
             if attr not in seen_attrs:
                 brat_str += attr.to_brat_str(output_references=False) + '\n'
         return brat_str.strip()
+
+    def add_annotation(self, annotation: Annotation):
+        ann_cls = annotation.__class__.__name__
+        references = []
+
+        if ann_cls == "Span":
+            annlist = self._spans
+            prefix = 'T'
+        elif ann_cls == "Event":
+            annlist = self._events
+            prefix = 'E'
+            references = annotation.spans
+        elif ann_cls == "Attribute":
+            annlist = self._attributes
+            prefix = 'A'
+            references = [annotation.reference]
+        else:
+            raise ValueError(f"Unsupported Annotation type '{ann_cls}'")
+        if annotation in annlist:
+            return
+        seen_ids = set([ann.id for ann in annlist])
+        if annotation.id in seen_ids:
+            max_id = max([int(annid.strip(prefix)) for annid in seen_ids])
+            annotation._id = f"{prefix}{max_id + 1}"
+        annlist.append(annotation)
+        for ref in references:
+            self.add_annotation(ref)
 
     def save_brat(self, outdir, filename=None):
         """
