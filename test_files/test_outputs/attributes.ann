@@ -1,6 +1,7 @@
 T2	problem 919 922	HTN
+A2	Assertion T2 present
 E0	Disposition:T2
-A0	Action E0 Start
+A10	Action E0 Start
 T8	problem 236 254	recent mild angina
 A8	Assertion T8 conditional
 T6	problem 455 467	abnormal EKG
@@ -19,4 +20,3 @@ T7	problem 6219 6222	HTN
 A7	Assertion T7 present
 T1	problem 6223 6237	ventral hernia
 A1	Assertion T1 present
-A2	Assertion T2 present

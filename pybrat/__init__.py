@@ -134,6 +134,7 @@ class Span(Annotation):
         attributes = attributes or {}
         for attr in attributes.values():
             attr.reference = self
+        self.attributes = attributes
 
     def __eq__(self, other):
         if not isinstance(other, Span):
@@ -153,18 +154,24 @@ class Span(Annotation):
             self.text,
         ))
 
-    def to_brat_str(self, output_references=False):
+    def to_brat_str(self, output_references=False, seen=None):
         """
         Format this Event instance as a brat string.
 
         :param bool output_references: If True, also includes the brat string
             of the Spans and Attributes of this Event. Default False.
         """
+        if seen is None:
+            seen = set()
+        if self.id in seen:
+            return ''
+        seen.add(self.id)
         span_str = f"{self.id}\t{self.type} {self.start_index} {self.end_index}\t{self.text}"  # noqa
         outlines = [span_str]
         if output_references is True:
-            attr_strs = [a.to_brat_str(output_references=False)
+            attr_strs = [a.to_brat_str(output_references=False, seen=seen)
                          for a in self.attributes.values()]
+            attr_strs = [s for s in attr_strs if s != '']
             outlines.extend(attr_strs)
         brat_str = '\n'.join(outlines)
         return brat_str
@@ -259,17 +266,23 @@ class Attribute(Annotation):
             raise ValueError(f"reference must be Span, Event, or None. Got {type(self.reference)}.")  # noqa
         return idx
 
-    def to_brat_str(self, output_references=False):
+    def to_brat_str(self, output_references=False, seen=None):
         """
         Format this Attribute instance as a brat string.
 
         :param bool output_references: If True, also includes the brat string
             of the reference of this Attribute. Default False.
         """
+        if seen is None:
+            seen = set()
+        if self.id in seen:
+            return ''
+        seen.add(self.id)
         outlines = []
         if output_references is True:
             if self.reference is not None:
-                ref_str = self.reference.to_brat_str(output_references=False)
+                ref_str = self.reference.to_brat_str(output_references=False,
+                                                     seen=seen)
                 outlines.append(ref_str)
         ref_id = self.reference.id
         outlines.append(f"{self.id}\t{self.type} {ref_id} {self.value}")
@@ -301,7 +314,7 @@ class Event(Annotation):
                  _type="Event", _source_file=None):
         super().__init__(_id=_id, _type=_type, _source_file=_source_file)
         for span in spans:
-            assert isinstance(span, Span), f"Not a Span instance: {span}"
+            assert isinstance(span, (Span, Event)), f"Not a Span instance: {span}"  # noqa
         self.spans = spans
         self.attributes = attributes or {}
         for attr in self.attributes.values():
@@ -314,6 +327,9 @@ class Event(Annotation):
             self.spans == other.spans,
             self.attributes == other.attributes,
         ])
+
+    def __hash__(self):
+        return hash((self.type, self.spans))
 
     @property
     def start_index(self):
@@ -329,13 +345,18 @@ class Event(Annotation):
         """
         return max([span.end_index for span in self.spans])
 
-    def to_brat_str(self, output_references=False):
+    def to_brat_str(self, output_references=False, seen=None):
         """
         Format this Event instance as a brat string.
 
         :param bool output_references: If True, also includes the brat string
             of the Spans and Attributes of this Event. Default False.
         """
+        if seen is None:
+            seen = set()
+        if self.id in seen:
+            return ''
+        seen.add(self.id)
         event_str = f"{self.id}\t"
         for (i, span) in enumerate(self.spans):
             spantype = span.type
@@ -344,11 +365,18 @@ class Event(Annotation):
             event_str += f"{spantype}:{span.id} "
         outlines = [event_str.strip()]
         if output_references is True:
-            attr_strs = [a.to_brat_str(output_references=False)
+            attr_strs = [a.to_brat_str(output_references=False, seen=seen)
                          for a in self.attributes.values()]
+            attr_strs = [s for s in attr_strs if s != '']
             outlines.extend(attr_strs)
-            for span in self.spans:
-                outlines.insert(0, span.to_brat_str(output_references=True))
+            for span in self.spans[::-1]:
+                output_reference = True
+                if isinstance(span, Event):
+                    output_reference = False
+                span_str = span.to_brat_str(
+                    output_references=output_reference, seen=seen)
+                if span_str != '':
+                    outlines.insert(0, span_str)
         brat_str = '\n'.join(outlines)
         return brat_str
 
@@ -528,6 +556,7 @@ class BratAnnotations(object):
         then links them as specified in the file.
         """
         span_lookup = {}
+        event_lookup = {}
         attribute_lookup = defaultdict(list)
 
         for raw_span in self._raw_spans:
@@ -557,11 +586,15 @@ class BratAnnotations(object):
                     raise OSError(f"Found conflicting source files! {self._source_file} != {raw_event['source_file']}")  # noqa
             event_spans = []
             for (span_type, span_id) in raw_event["ref_spans"]:
-                span = span_lookup[span_id]
+                try:
+                    span = span_lookup[span_id]
+                except KeyError:
+                    span = event_lookup[span_id]
                 event_spans.append(span)
             event = Event(raw_event["_id"], _type=raw_event["_type"],
                           *event_spans, attributes=None,
                           _source_file=raw_event["_source_file"])
+            event_lookup[raw_event["_id"]] = event
             attrs = attribute_lookup[raw_event["_id"]]
             for attr in attrs:
                 attr.reference = event
@@ -604,17 +637,24 @@ class BratAnnotations(object):
         seen_spans = set()
         seen_attrs = set()
         brat_str = ''
+        seen = set()
         for event in self.events:
-            brat_str += event.to_brat_str(output_references=True) + '\n'
+            line = event.to_brat_str(output_references=True, seen=seen) + '\n'
+            if line != '':
+                brat_str += line
             seen_spans.update(event.spans)
             seen_attrs.update(event.attributes.values())
         for span in self.spans:
             if span not in seen_spans:
-                brat_str += span.to_brat_str(output_references=True) + '\n'
+                line = span.to_brat_str(output_references=True, seen=seen) + '\n'  # noqa
+                if line != '':
+                    brat_str += line
                 seen_attrs.update(span.attributes.values())
         for attr in self.attributes:
             if attr not in seen_attrs:
-                brat_str += attr.to_brat_str(output_references=False) + '\n'
+                line = attr.to_brat_str(output_references=False, seen=seen) + '\n'  # noqa
+                if line != '':
+                    brat_str += line
         return brat_str.strip()
 
     def add_annotation(self, annotation: Annotation):

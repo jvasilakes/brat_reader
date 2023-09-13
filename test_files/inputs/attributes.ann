@@ -19,4 +19,4 @@ A8	Assertion T8 conditional
 T9	problem 602 619	perfusion defects
 A9	Assertion T9 present
 E0	Disposition:T2
-A0	Action E0 Start
+A10	Action E0 Start
