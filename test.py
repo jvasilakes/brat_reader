@@ -88,19 +88,22 @@ def test_brat_text():
         sentences="test_files/text_files/1.jsonl")
 
     for span in anns.spans:
-        text_span_idx = anntxt.text(span.start_index, span.end_index)
+        text_span_idx = anntxt.text(start_char=span.start_index,
+                                    end_char=span.end_index)
         assert text_span_idx == span.text
         text_span = anntxt.text(annotations=[span])
         assert text_span == span.text
 
-        tok_span_idx = anntxt.tokens(span.start_index, span.end_index)
+        tok_span_idx = anntxt.tokens(start_char=span.start_index,
+                                     end_char=span.end_index)
         assert span.text in ' '.join(tok_span_idx)
-        tok_span = anntxt.tokens(annotations=[span])
+        tok_span = anntxt.tokens(span)
         assert span.text in ' '.join(tok_span)
 
-        sent_span_idx = anntxt.sentences(span.start_index, span.end_index)
+        sent_span_idx = anntxt.sentences(start_char=span.start_index,
+                                         end_char=span.end_index)
         assert span.text in ' '.join([s["_text"] for s in sent_span_idx])
-        sent_span = anntxt.sentences(annotations=[span])
+        sent_span = anntxt.sentences(span)
         assert span.text in ' '.join([s["_text"] for s in sent_span])
 
 

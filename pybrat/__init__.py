@@ -104,31 +104,73 @@ class Annotation(object):
         raise NotImplementedError()
 
 
+class CharacterIndex(object):
+    """
+    :param list(tuple) sorted_spans: a list of tuples, each tuple containing
+                                     the (start, end) indices of a text span.
+    """
+
+    def __init__(self, sorted_spans):
+        self.sorted_spans = sorted_spans
+
+    @property
+    def start_index(self):
+        if len(self.sorted_spans) > 0:
+            return self.sorted_spans[0][0]
+        return 0
+
+    @property
+    def end_index(self):
+        if len(self.sorted_spans) > 0:
+            return self.sorted_spans[-1][-1]
+        return 0
+
+    def __eq__(self, other):
+        if not isinstance(other, CharacterIndex):
+            return False
+        return all([self_span == other_span for (self_span, other_span)
+                    in zip(self.sorted_spans, other.sorted_spans)])
+
+    def __iter__(self):
+        return iter([idx for span in self.sorted_spans
+                     for idx in range(*span)])
+
+    def __add__(self, other):
+        if not isinstance(other, CharacterIndex):
+            raise TypeError("other element must be CharacterIndex.")
+        spans = self.sorted_spans + other.sorted_spans
+        return CharacterIndex(spans)
+
+    def __hash__(self):
+        return hash(str(self.sorted_spans))
+
+    def __str__(self):
+        return ';'.join([f"{span[0]} {span[1]}" for span in self.sorted_spans])
+
+    def __repr__(self):
+        return f"CharacterIndex({str(self.sorted_spans)})"
+
+
 class Span(Annotation):
     """
     A brat span. I.e., a span of text.
 
     :param str _id: the unique numerical identifier of this span with the 'T'
                     prefix. E.g., 'T3'.
-    :param int start_index: the starting character index of this span
-                            in the associated document.
-    :param int end_index: the ending character index of this span
-                          in the associated document.
+    :param CharacterIndex indices: the CharacterIndex for this span.
     :param str text: the actual span text
     :param str _type: (Optional) a string giving the type of this span,
                       e.g., for NER. Default is 'Span'.
     :param str _source_file: (Optional), the name of the .ann file which
                              contains this span.
     """
-    def __init__(self, _id: str, start_index: int, end_index: int,
+    def __init__(self, _id: str, indices: CharacterIndex,
                  text: str, _type: str = "Span", _source_file: str = None,
                  attributes=None):
         super().__init__(_id=_id, _type=_type, _source_file=_source_file)
-        assert isinstance(start_index, int)
-        assert isinstance(end_index, int)
+        assert isinstance(indices, CharacterIndex)
         assert isinstance(text, str)
-        self.start_index = start_index
-        self.end_index = end_index
+        self.indices = indices
         self.text = text
         self.attributes = {}
         attributes = attributes or {}
@@ -136,21 +178,27 @@ class Span(Annotation):
             attr.reference = self
         self.attributes = attributes
 
+    @property
+    def start_index(self):
+        return self.indices.start_index
+
+    @property
+    def end_index(self):
+        return self.indices.end_index
+
     def __eq__(self, other):
         if not isinstance(other, Span):
             return False
         return all([
             self.type == other.type,
-            self.start_index == other.start_index,
-            self.end_index == other.end_index,
+            self.indices == other.indices,
             self.text == other.text,
         ])
 
     def __hash__(self):
         return hash((
             self.type,
-            self.start_index,
-            self.end_index,
+            self.indices,
             self.text,
         ))
 
@@ -166,7 +214,7 @@ class Span(Annotation):
         if self.id in seen:
             return ''
         seen.add(self.id)
-        span_str = f"{self.id}\t{self.type} {self.start_index} {self.end_index}\t{self.text}"  # noqa
+        span_str = f"{self.id}\t{self.type} {str(self.indices)}\t{self.text}"  # noqa
         outlines = [span_str]
         if output_references is True:
             attr_strs = [a.to_brat_str(output_references=False, seen=seen)
@@ -179,8 +227,7 @@ class Span(Annotation):
     def asdict(self):
         return {'_id': self.id,
                 '_type': self.type,
-                'start_index': self.start_index,
-                'end_index': self.end_index,
+                'indices': str(self.indices),
                 'text': self.text,
                 '_source_file': self._source_file}
 
@@ -245,26 +292,18 @@ class Attribute(Annotation):
         """
         The starting character index of this Attribute's reference.
         """
-        if self.reference is None:
-            idx = None
-        elif isinstance(self.reference, (Span, Event)):
-            idx = self.reference.start_index
-        else:
-            raise ValueError(f"reference must be Span, Event, or None. Got {type(self.reference)}.")  # noqa
-        return idx
+        return self.span.start_index
 
     @property
     def end_index(self):
         """
         The ending character index of this Attribute's reference.
         """
-        if self.reference is None:
-            idx = None
-        elif isinstance(self.reference, (Span, Event)):
-            idx = self.reference.end_index
-        else:
-            raise ValueError(f"reference must be Span, Event, or None. Got {type(self.reference)}.")  # noqa
-        return idx
+        return self.span.end_index
+
+    @property
+    def indices(self):
+        return self.span.indices
 
     def to_brat_str(self, output_references=False, seen=None):
         """
@@ -283,7 +322,8 @@ class Attribute(Annotation):
             if self.reference is not None:
                 ref_str = self.reference.to_brat_str(output_references=False,
                                                      seen=seen)
-                outlines.append(ref_str)
+                if ref_str != '':
+                    outlines.append(ref_str)
         ref_id = self.reference.id
         outlines.append(f"{self.id}\t{self.type} {ref_id} {self.value}")
         return '\n'.join(outlines)
@@ -345,6 +385,10 @@ class Event(Annotation):
         """
         return max([span.end_index for span in self.spans])
 
+    @property
+    def indices(self):
+        return sum([span.indices for span in self.spans], CharacterIndex([]))
+
     def to_brat_str(self, output_references=False, seen=None):
         """
         Format this Event instance as a brat string.
@@ -370,11 +414,7 @@ class Event(Annotation):
             attr_strs = [s for s in attr_strs if s != '']
             outlines.extend(attr_strs)
             for span in self.spans[::-1]:
-                output_reference = True
-                if isinstance(span, Event):
-                    output_reference = False
-                span_str = span.to_brat_str(
-                    output_references=output_reference, seen=seen)
+                span_str = span.to_brat_str(output_references=True, seen=seen)
                 if span_str != '':
                     outlines.insert(0, span_str)
         brat_str = '\n'.join(outlines)
@@ -580,27 +620,40 @@ class BratAnnotations(object):
             attribute_lookup[ref_id].append(attribute)
             self._attributes.append(attribute)
 
-        for raw_event in self._raw_events:
-            if "_source_file" in raw_event:
-                if self._source_file != raw_event["_source_file"]:
-                    raise OSError(f"Found conflicting source files! {self._source_file} != {raw_event['source_file']}")  # noqa
-            event_spans = []
-            for (span_type, span_id) in raw_event["ref_spans"]:
-                try:
-                    span = span_lookup[span_id]
-                except KeyError:
-                    span = event_lookup[span_id]
-                event_spans.append(span)
-            event = Event(raw_event["_id"], _type=raw_event["_type"],
-                          *event_spans, attributes=None,
-                          _source_file=raw_event["_source_file"])
-            event_lookup[raw_event["_id"]] = event
-            attrs = attribute_lookup[raw_event["_id"]]
-            for attr in attrs:
-                attr.reference = event
-            attrs_by_type = {attr.type: attr for attr in attrs}
-            event.attributes = attrs_by_type
-            self._events.append(event)
+        # Events can be nested, and sometimes can be out of order,
+        # so we loop over the raw events until they're all accounted for.
+        while len(event_lookup) < len(self._raw_events):
+            for raw_event in self._raw_events:
+                if raw_event["_id"] in event_lookup.keys():
+                    continue
+                if "_source_file" in raw_event:
+                    if self._source_file != raw_event["_source_file"]:
+                        raise OSError(f"Found conflicting source files! {self._source_file} != {raw_event['source_file']}")  # noqa
+                event_spans = []
+                skip_this_event = False
+                for (span_type, span_id) in raw_event["ref_spans"]:
+                    try:
+                        span = span_lookup[span_id]
+                    except KeyError:
+                        try:
+                            span = event_lookup[span_id]
+                        except KeyError:
+                            skip_this_event = True
+                            break
+                    event_spans.append(span)
+                if skip_this_event is True:
+                    continue
+
+                event = Event(raw_event["_id"], _type=raw_event["_type"],
+                              *event_spans, attributes=None,
+                              _source_file=raw_event["_source_file"])
+                event_lookup[raw_event["_id"]] = event
+                attrs = attribute_lookup[raw_event["_id"]]
+                for attr in attrs:
+                    attr.reference = event
+                attrs_by_type = {attr.type: attr for attr in attrs}
+                event.attributes = attrs_by_type
+                self._events.append(event)
 
     def get_highest_level_annotations(self, type=None):
         """
@@ -639,22 +692,22 @@ class BratAnnotations(object):
         brat_str = ''
         seen = set()
         for event in self.events:
-            line = event.to_brat_str(output_references=True, seen=seen) + '\n'
+            line = event.to_brat_str(output_references=True, seen=seen)
             if line != '':
-                brat_str += line
+                brat_str += line + '\n'
             seen_spans.update(event.spans)
             seen_attrs.update(event.attributes.values())
         for span in self.spans:
             if span not in seen_spans:
-                line = span.to_brat_str(output_references=True, seen=seen) + '\n'  # noqa
+                line = span.to_brat_str(output_references=True, seen=seen)
                 if line != '':
-                    brat_str += line
+                    brat_str += line + '\n'
                 seen_attrs.update(span.attributes.values())
         for attr in self.attributes:
             if attr not in seen_attrs:
-                line = attr.to_brat_str(output_references=False, seen=seen) + '\n'  # noqa
+                line = attr.to_brat_str(output_references=False, seen=seen)
                 if line != '':
-                    brat_str += line
+                    brat_str += line + '\n'
         return brat_str.strip()
 
     def add_annotation(self, annotation: Annotation):
@@ -772,8 +825,8 @@ class BratText(object):
     def __str__(self):
         return self._text
 
-    def text(self, start_char: int = None, end_char: int = None,
-             annotations: List[Annotation] = []):
+    def text(self, annotations: List[Annotation] = [],
+             start_char: int = None, end_char: int = None):
         assert isinstance(start_char, (type(None), int))
         assert isinstance(end_char, (type(None), int))
         if not isinstance(annotations, list):
@@ -793,8 +846,8 @@ class BratText(object):
             start_char = 0
         return self._text[start_char:end_char]
 
-    def tokens(self, start_char: int = None, end_char: int = None,
-               annotations: List[Annotation] = []):
+    def tokens(self, annotations: List[Annotation] = [],
+               start_char: int = None, end_char: int = None):
         assert isinstance(start_char, (type(None), int))
         assert isinstance(end_char, (type(None), int))
         if not isinstance(annotations, list):
@@ -803,19 +856,21 @@ class BratText(object):
         if len(annotations) > 0:
             if start_char is not None or end_char is not None:
                 warnings.warn("Ignoring {start,end}_char since Annotation was provided.")  # noqa
-            start_char = min([ann.start_index for ann in annotations])
-            end_char = max([ann.end_index for ann in annotations])
+            char_idxs = sum([ann.indices for ann in annotations],
+                            CharacterIndex([]))
 
-        if end_char is None:
+        else:
+            if end_char is None:
+                if start_char is None:
+                    end_char = len(self._text)
+                else:
+                    end_char = start_char + 1
             if start_char is None:
-                end_char = len(self._text)
-            else:
-                end_char = start_char + 1
-        if start_char is None:
-            start_char = 0
+                start_char = 0
+            char_idxs = range(start_char, end_char)
 
         tokens = []
-        for char_i in range(start_char, end_char):
+        for char_i in char_idxs:
             try:
                 t = self._tokens_lookup[char_i]
             except KeyError:
@@ -824,8 +879,8 @@ class BratText(object):
                 tokens.append(t)
         return tokens
 
-    def sentences(self, start_char: int = None, end_char: int = None,
-                  annotations: List[Annotation] = []):
+    def sentences(self, annotations: List[Annotation] = [],
+                  start_char: int = None, end_char: int = None):
         if self.is_split_into_sentences is False:
             raise ValueError("Text is not split into sentences.")
         assert isinstance(start_char, (type(None), int))
@@ -836,18 +891,20 @@ class BratText(object):
         if len(annotations) > 0:
             if start_char is not None or end_char is not None:
                 warnings.warn("Ignoring {start,end}_char since Annotation was provided.")  # noqa
-            start_char = min([ann.start_index for ann in annotations])
-            end_char = max([ann.end_index for ann in annotations])
-
-        if end_char is None:
+            char_idxs = sum([ann.indices for ann in annotations],
+                            CharacterIndex([]))
+        else:
+            if end_char is None:
+                if start_char is None:
+                    end_char = max(list(self._sentences_lookup.keys()))
+                else:
+                    end_char = start_char + 1
             if start_char is None:
-                end_char = max(list(self._sentences_lookup.keys()))
-            else:
-                end_char = start_char + 1
-        if start_char is None:
-            start_char = min(list(self._sentences_lookup.keys()))
+                start_char = min(list(self._sentences_lookup.keys()))
+            char_idxs = range(start_char, end_char)
+
         sents = []
-        for char_i in range(start_char, end_char):
+        for char_i in char_idxs:
             try:
                 s = self._sentences_lookup[char_i]
             except KeyError:
@@ -970,36 +1027,23 @@ def parse_brat_span(line):
     line = html.unescape(line)
     uid, label, other = line.split(maxsplit=2)
     # start1 end1;start2 end2
-    if re.match(r'[0-9]+\s[0-9]+\s?;\s?[0-9]+\s[0-9]+', other):
-        # Occasionally, non-contiguous spans occur in the n2c2 2022 data.
-        # Merge these to be contiguous.
+    tmp = other.split('\t')
+    if len(tmp) == 1:
+        spans = tmp[0]
         text = ''
-        spans = other.split(';', maxsplit=1)
-        start_idx = None
-        for span in spans:
-            start_idx_tmp, end_idx_plus = span.split(maxsplit=1)
-            if start_idx is None:
-                start_idx = start_idx_tmp
-            end_idx_split = end_idx_plus.split(maxsplit=1)
-            if len(end_idx_split) > 1:
-                end_idx, text = end_idx_split
-            else:
-                end_idx = end_idx_split[0]
-    # start end
     else:
-        tmp = other.split(maxsplit=2)
-        if len(tmp) == 3:
-            start_idx, end_idx, text = tmp
-        elif len(tmp) == 2:
-            start_idx, end_idx = tmp
-            text = ''
-        else:
-            raise ValueError(f"Improperly formatted span '{line}'")
+        spans, text = tmp
+    if ';' in spans:
+        spans = [s.split() for s in spans.split(';')]
+        spans = [(int(s), int(e)) for (s, e) in spans]
+        indices = CharacterIndex(spans)
+    else:
+        s, e = spans.split()
+        indices = CharacterIndex([(int(s), int(e))])
 
     return {"_id": uid,
             "_type": label,
-            "start_index": int(start_idx),
-            "end_index": int(end_idx),
+            "indices": indices,
             "text": text}
 
 
